@@ -27,8 +27,10 @@
         "admin-lte": "^3.0.0-alpha.2",
         "font-awesome": "^4.7.0",
         "vform": "^1.0.1",
+        "vue-moment": "^4.0.0",
         "vue-progressbar": "^0.7.5",
         "vue-router": "^3.0.6",
-        "vue-snotify": "^3.2.1"
+        "vue-snotify": "^3.2.1",
+        "vue-tabs-component": "^1.5.0"
     }
 }

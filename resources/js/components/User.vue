@@ -183,7 +183,7 @@
                         this.$Progress.finish();
                     })
                     .catch(e=>{
-                    this.$Progress.fail();
+                        this.$Progress.fail();
                     })
                 }else{
                     this.$Progress.fail();

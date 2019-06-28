@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class BillCollection extends ResourceCollection
+class MillCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -15,13 +15,11 @@ class BillCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->transform(function ($bill){
+            'data' => $this->collection->transform(function ($mill){
                 return [
-                    'id' => $bill->id,
-                    'user_id' => $bill->user_id,
-                    'expense_type' => $bill->email,
-                    'expense_item_type' => $bill->phone,
-                    'expense_amount' => $bill->profile,
+                    'mill_status' => $mill->mill_status,
+                    'user_id' => $mill->user_id,
+                    'date' => $mill->date,
                 ];
             })
         ];

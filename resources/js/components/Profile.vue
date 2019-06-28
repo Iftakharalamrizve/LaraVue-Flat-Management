@@ -121,6 +121,7 @@
         },
         methods:{
             getCurrentUser(){
+                console.log(this.form);
                 axios.get('/api/profile')
                 .then(response=>{
                     this.form.fill(response.data.data);

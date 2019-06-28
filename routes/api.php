@@ -19,5 +19,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResources(['profile' => 'API\ProfileController']);
 Route::apiResources(['user' => 'API\UserController']);
 Route::apiResources(['millexpense' => 'API\MillAccountController']);
+Route::apiResources(['mill' => 'API\MillController']);
+//extra method 
+Route::post('millexpense-chagestatus/{index}','API\MillAccountController@cangeStatus');
+Route::get('mill-history/{month}','API\MillController@millHistoryByMonth');
+Route::get('totalMill/{month}','API\MillController@TotalUserMill');
 Route::get('search/user/{field}/{query}','API\UserController@search');
 // Route::get('profile', 'API\ProfileController@profile');

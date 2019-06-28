@@ -3,10 +3,12 @@ import Profile from '../components/Profile';
 import User from '../components/User';
 import Developer from '../components/Developer';
 import Billhistory from '../components/Billhistory';
+import Mill from '../components/Mill';
 export const routes = [
     { path: '/dashboard', component: Dashboard },
     { path: '/profile', component: Profile },
     { path: '/users', component: User },
     { path: '/developer', component: Developer },
     { path: '/bill-history', component: Billhistory },
+    { path: '/mill-account', component: Mill },
   ]

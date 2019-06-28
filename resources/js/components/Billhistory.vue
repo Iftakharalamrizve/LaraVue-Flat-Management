@@ -1,102 +1,141 @@
 <template>
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="">
-                <div class="table-responsive">
-
-                
-              <table id="mytable" class="table table-bordred table-striped">
-                   
-                   <thead>
-                   
-                   <th><input type="checkbox" id="checkall" /></th>
-                   <th>First Name</th>
-                    <th>Last Name</th>
-                     <th>Address</th>
-                     <th>Email</th>
-                     <th>Contact</th>
-                      <th>Edit</th>
-                      
-                       <th>Delete</th>
-                   </thead>
-                    <tbody>
-                    
-                    <tr>
-                    <td><input type="checkbox" class="checkthis" /></td>
-                    <td>Mohsin</td>
-                    <td>Irshad</td>
-                    <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                    <td>isometric.mohsin@gmail.com</td>
-                    <td>+923335586757</td>
-                    <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                    <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                    </tr>
-                            
-                        <tr>
-                            <td><input type="checkbox" class="checkthis" /></td>
-                            <td>Mohsin</td>
-                            <td>Irshad</td>
-                            <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                            <td>isometric.mohsin@gmail.com</td>
-                            <td>+923335586757</td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                            </tr>
-                            
-                            
-                        <tr>
-                            <td><input type="checkbox" class="checkthis" /></td>
-                            <td>Mohsin</td>
-                            <td>Irshad</td>
-                            <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                            <td>isometric.mohsin@gmail.com</td>
-                            <td>+923335586757</td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                            </tr>
-                            
-                            
-                            
-                        <tr>
-                            <td><input type="checkbox" class="checkthis" /></td>
-                            <td>Mohsin</td>
-                            <td>Irshad</td>
-                            <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                            <td>isometric.mohsin@gmail.com</td>
-                            <td>+923335586757</td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                            </tr>
-                            
-                            
-                        <tr>
-                            <td><input type="checkbox" class="checkthis" /></td>
-                            <td>Mohsin</td>
-                            <td>Irshad</td>
-                            <td>CB 106/107 Street # 11 Wah Cantt Islamabad Pakistan</td>
-                            <td>isometric.mohsin@gmail.com</td>
-                            <td>+923335586757</td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Edit"><button class="btn btn-primary btn-xs" data-title="Edit" data-toggle="modal" data-target="#edit" ><span class="glyphicon glyphicon-pencil"></span></button></p></td>
-                            <td><p data-placement="top" data-toggle="tooltip" title="Delete"><button class="btn btn-danger btn-xs" data-title="Delete" data-toggle="modal" data-target="#delete" ><span class="glyphicon glyphicon-trash"></span></button></p></td>
-                        </tr>
-                    </tbody>
-                        
-                </table>
-
-                <div class="clearfix"></div>
-                <ul class="pagination pull-right">
-                <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
-                <li class="active"><a href="#">1</a></li>
-                <li><a href="#">2</a></li>
-                <li><a href="#">3</a></li>
-                <li><a href="#">4</a></li>
-                <li><a href="#">5</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
-                </ul>
-                
-            </div>
+        <div class="row">
+            <div class="col-md-12 mb-5">
+                <h4 class="text-center">{{ Date.now() | moment("dddd, MMMM Do YYYY") }}</h4>
             </div>
         </div>
+        <div class="row mb-3">
+            <div class="col-md-9"></div>
+            <div class="col-md-3">
+                <button class="btn btn-info" data-toggle="modal" data-target="#addModal">Add New <i class="fa fa fa-money"></i></button>
+                <button type="button" class="btn btn-primary" >
+                    Reload
+                    <i class="fa fa-refresh"></i>
+                </button>
+            </div>
+        </div>
+        <div class="">
+            <div class="">
+                <div class="table-responsive">
+                    <table id="mytable" class="table table-bordred table-striped">
+                        <thead>
+                            <th>User Name</th>
+                            <th>Expensr Type </th>
+                            <th>Expense Item Type </th>
+                            <th>Expense Amount </th>
+                            <th>Status</th>
+                        </thead>
+                        <tbody v-if="bills.length>0">
+                            <tr class="text-center"  v-for="(billsingle,index) in allAccounts" :key="index">
+                                <td>{{billsingle.id}}</td>
+                                <td>{{billsingle.expense_type==1?'Market':'deposit'}}</td>
+                                <td>{{billsingle.expense_item_type==1?'Kacabazaar':'Others'}}</td>
+                                <td>{{billsingle.expense_amount}}</td>
+                                <td>
+                                    <button  v-if="billsingle.status==0" class="btn btn-primary btn-xs"  v-on:click="changeStatus(billsingle.id)" ><span class="glyphicon glyphicon-pencil">Peanding</span></button>
+                                    <button v-else  class="btn btn-primary btn-xs" v-on:click="changeStatus(billsingle.id)" ><span class="glyphicon glyphicon-pencil" >Approved</span></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tbody v-else>
+                            <tr>
+                                <th colspan="8">
+                                    <p class="text-danger text-center">There are No data </p>
+                                </th>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="container mt-5">
+            <div class="row">
+                <div class="table-responsive table-bordered movie-table">
+                    <table class="table movie-table">
+                        <thead>
+                        <tr class= "movie-table-head">
+                            <th>Accounts Type </th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>   
+                    <tbody>
+                        <!--row-->
+                        <tr class= "dark-row">
+                            <td >Diposite</td>
+                            <td> <span style="color:green;">{{dipositAmount}}</span></td>                                     
+                        </tr>
+                        <!--/.row-->
+                    <!--row-->
+                        <tr class="light-row">
+                            <td>Expense </td>
+                            <td> <span style="color:green;">{{costAmount}}</span></td>                                     
+                        </tr>
+                         <tr class="light-row">
+                            <td>Total Mill </td>
+                            <td> <span style="color:green;">{{totalMill}}</span></td>                                     
+                        </tr>
+                        <tr class="light-row">
+                            <td>Total Mill Rate : </td>
+                            <td> <span style="color:green;">{{parseFloat(costAmount/totalMill).toFixed(2)}}</span></td>                                     
+                        </tr>
+                    </tbody>
+                    </table>
+                    </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" v-if="$gate.isAdmin()">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Create Bill History</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form @submit.prevent="crateBill" @keydown="form.onKeydown($event)">
+                    <div class="modal-body">
+                        <input type="hidden" name="user_id" v-model="form.user_id">
+                        <div class="form-group">
+                            <select name="expense_type" v-model="form.expense_type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('expense_type') }">
+                                <option value="">Expense  Type </option>
+                                <option value="1">Market</option>
+                                <option value="2">Diposite</option>
+                            </select>
+                            <has-error :form="form" field="expense_type"></has-error>
+                        </div>
+                        <div class="form-group" v-if="form.expense_type==1">
+                            <select name="expense_item_type" v-model="form.expense_item_type" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('expense_item_type') }">
+                                <option value="">Expense Item Type </option>
+                                <option value="1">Kaca Bazar / Sukna Bazar  </option>
+                                <option value="2">Others</option>
+                            </select>
+                            <has-error :form="form" field="expense_item_type"></has-error>
+                        </div>
+                        <div class="form-group">
+                            <input v-model="form.expense_amount" type="number" name="expense_amount"
+                                placeholder="Expense Amount"
+                                class="form-control" :class="{ 'is-invalid': form.errors.has('expense_amount') }">
+                            <has-error :form="form" field="expense_amount"></has-error>
+                        </div>
+                        <div class="form-group">
+                            <input v-model="form.note" type="text" name="note"
+                                placeholder="Note"
+                                class="form-control" :class="{ 'is-invalid': form.errors.has('note') }">
+                            <has-error :form="form" field="note"></has-error>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
+                </div>
+            </div>
+        </div>
+        <vue-progress-bar ></vue-progress-bar>
+         <vue-snotify ></vue-snotify>
     </div>
 </template>
 
@@ -104,23 +143,124 @@
     export default {
         data(){
             return{
-                bill:[]
+                bills:[],
+                allAccounts:[],
+                marketList:[],
+                dipositList:[],
+                dipositAmount:Number,
+                costAmount:Number,
+                date: new Date(),
+                month:Number,
+                totalMill:0,
+                form: new Form({
+                    id:'',
+                    user_id: '',
+                    expense_type:'',
+                    expense_item_type: '',
+                    expense_amount: '',
+                    note: '',
+                }),
             }
         },
         mounted() {
+            this.month = this.date.getMonth()+1;
             this.getExpense();
-            console.log('Component mounted.')
+            
         },
         methods:{
+
             getExpense(){
+                this.$Progress.start();
+                var self=this;
                 axios.get('/api/millexpense')
                 .then(response=>{
-                    console.log(response)
+                    self.bills=response.data;
+                    self.allAccounts=response.data;
+                    this.getTotalMill();
+                    this.getAmountMarketBill();
+                    this.$Progress.finish();
+                    
                 })
                 .catch(e=>{
-                    console.log(e);
+                    this.$Progress.fail();
+                })
+            },
+            getAmountMarketBill(){
+                var self=this;
+                self.dipositAmount=0;
+                self.costAmount=0;
+                // this.bills.forEach((item)=>{
+                //     if(item.expense_item_type != null){
+                //         self.marketList.push(item);
+                //         if(item.status==1){
+                //             self.costAmount += item.expense_amount;
+                //         }
+                //     }else{
+                //         self.dipositList.push(item);
+                //         if(item.status==1){
+                //             self.dipositAmount += item.expense_amount;
+                //         }
+                //     }
+                // })
+            },
+            changeStatus(index){
+                
+                this.$Progress.start();
+                axios.post('/api/millexpense-chagestatus/'+index)
+                .then((response)=>{
+                    this.$Progress.finish();
+                    this.$snotify.success("Your Status Update Successfully", "Success");
+                })
+                .catch(e=>{
+                    this.$Progress.fail();
+                    this.$snotify.error("Your Status Not Update", "Success");
+                })
+            },
+            crateBill() {
+                this.$Progress.start();
+                this.form.busy = true;
+                this.form.post('api/millexpense')
+                .then(response=>{
+                    this.getExpense();
+                    $('#addModal').modal('hide');
+                    this.form.reset();
+                    this.form.clear();
+                    this.$Progress.finish();
+                    this.$snotify.success("Customer Successfully Saved", "Success");
+                })
+                .then(e=>{
+                    if(e != undefined){
+                        this.$Progress.fail();
+                        this.$snotify.error(
+                        "Something went wrong try again later.",
+                        "Error"
+                        );
+                    }
+                    
+                })
+            },
+            getTotalMill(){
+                var self=this;
+                this.$Progress.start();
+                axios.get("/api/totalMill/"+this.month)
+                .then(response=>{
+                    self.totalMill=response.data;
+                    this.$Progress.finish();
+                })
+                .catch(e=>{
+                    this.$Progress.fail();
                 })
             }
         }
     }
 </script>
+<style>
+.dark-row{
+    background:#AEC5E8;
+    
+}
+.light-row{
+    
+    background:#F1F3F0;
+}
+</style>

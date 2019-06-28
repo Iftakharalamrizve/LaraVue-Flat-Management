@@ -30,7 +30,11 @@ const VueProgressBarOptions = {
     location: 'top',
     inverse: false
 };
+
 Vue.use(VueProgressBar,VueProgressBarOptions);
+
+//vue moment 
+Vue.use(require('vue-moment'));
 
 //implement gate 
 import Gate from "./Gate";
@@ -50,6 +54,10 @@ Vue.use(Snotify, Snotifyoptions)
 Vue.component(
   'not-found',
   require('./components/Notfound.vue').default
+);
+Vue.component(
+  'mill-history',
+  require('./components/Millhistory.vue').default
 );
 Vue.component(
   'passport-clients',
