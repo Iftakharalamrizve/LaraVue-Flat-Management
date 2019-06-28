@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\MillAccounts;
 use Auth;
+use DB;
 use App\User;
 class MillAccountController extends Controller
 {
@@ -15,7 +16,7 @@ class MillAccountController extends Controller
      */
     public function index(){
         
-        $data= MillAccounts::all();
+        $data= DB::table('mill_accounts')->join('users','mill_accounts.user_id','=','users.id')->select('mill_accounts.*','users.name')->get();
         return $data;
     }
 
@@ -44,7 +45,11 @@ class MillAccountController extends Controller
 
     public function cangeStatus($id){
         $objectModel=MillAccounts::find($id);
-        $objectModel->status==0?$objectModel->status=1?$objectModel->status==1:$objectModel->status=0:'';
+        if($objectModel->status==0){
+            $objectModel->status=1;
+        }else{
+            $objectModel->status=0;
+        }
         if($objectModel->save()){
             return response(['message'=>'Your Status  is updated','status'=>"success"],201);
         }else{
@@ -57,9 +62,19 @@ class MillAccountController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($month)
     {
-        //
+        //month convert 1-9 to 01-09 for filter data 
+        if($month<10){
+            $month = '0'.$month;
+        }
+        //date make 
+        $date= date('Y') . "-" .$month;
+        $data= DB::table('mill_accounts')->join('users','mill_accounts.user_id','=','users.id')
+                ->where('mill_accounts.created_at','LIKE',"%$date%")
+                ->select('mill_accounts.*','users.name')
+                ->get();
+        return $data;
     }
 
     /**

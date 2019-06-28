@@ -18,23 +18,23 @@
         <div class="">
             <div class="">
                 <div class="table-responsive">
-                    <table id="mytable" class="table table-bordred table-striped">
+                    <table  class="table table-bordred table-striped">
                         <thead>
-                            <th>User Name</th>
-                            <th>Expensr Type </th>
-                            <th>Expense Item Type </th>
-                            <th>Expense Amount </th>
-                            <th>Status</th>
+                            <th class="text-center" >User Name</th>
+                            <th class="text-center" >Expensr Type </th>
+                            <th class="text-center" >Expense Item Type </th>
+                            <th class="text-center" >Expense Amount </th>
+                            <th class="text-center" >Status</th>
                         </thead>
                         <tbody v-if="bills.length>0">
                             <tr class="text-center"  v-for="(billsingle,index) in allAccounts" :key="index">
-                                <td>{{billsingle.id}}</td>
+                                <td>{{billsingle.name}}</td>
                                 <td>{{billsingle.expense_type==1?'Market':'deposit'}}</td>
                                 <td>{{billsingle.expense_item_type==1?'Kacabazaar':'Others'}}</td>
                                 <td>{{billsingle.expense_amount}}</td>
                                 <td>
-                                    <button  v-if="billsingle.status==0" class="btn btn-primary btn-xs"  v-on:click="changeStatus(billsingle.id)" ><span class="glyphicon glyphicon-pencil">Peanding</span></button>
-                                    <button v-else  class="btn btn-primary btn-xs" v-on:click="changeStatus(billsingle.id)" ><span class="glyphicon glyphicon-pencil" >Approved</span></button>
+                                    <button type="button" v-if="billsingle.status==0" class="btn bg-warning margin btn-sm" v-on:click="changeStatus(billsingle.id)" > Peanding </button>
+                                    <button type="button" v-else class="btn bg-navy margin btn-sm" v-on:click="changeStatus(billsingle.id)" > Approved</button>
                                 </td>
                             </tr>
                         </tbody>
@@ -147,8 +147,8 @@
                 allAccounts:[],
                 marketList:[],
                 dipositList:[],
-                dipositAmount:Number,
-                costAmount:Number,
+                dipositAmount:0,
+                costAmount:0,
                 date: new Date(),
                 month:Number,
                 totalMill:0,
@@ -172,7 +172,7 @@
             getExpense(){
                 this.$Progress.start();
                 var self=this;
-                axios.get('/api/millexpense')
+                axios.get('/api/millexpense/'+this.month)
                 .then(response=>{
                     self.bills=response.data;
                     self.allAccounts=response.data;
@@ -189,27 +189,28 @@
                 var self=this;
                 self.dipositAmount=0;
                 self.costAmount=0;
-                // this.bills.forEach((item)=>{
-                //     if(item.expense_item_type != null){
-                //         self.marketList.push(item);
-                //         if(item.status==1){
-                //             self.costAmount += item.expense_amount;
-                //         }
-                //     }else{
-                //         self.dipositList.push(item);
-                //         if(item.status==1){
-                //             self.dipositAmount += item.expense_amount;
-                //         }
-                //     }
-                // })
+                this.bills.forEach((item)=>{
+                    if(item.expense_item_type != null){
+                        // self.marketList.push(item);
+                        if(item.status==1){
+                            self.costAmount += item.expense_amount;
+                        }
+                    }else{
+                        self.dipositList.push(item);
+                        if(item.status==1){
+                            self.dipositAmount += item.expense_amount;
+                        }
+                    }
+                })
             },
             changeStatus(index){
-                
+                var self=this;
                 this.$Progress.start();
-                axios.post('/api/millexpense-chagestatus/'+index)
+                axios.get('/api/millexpense-chagestatus/'+index)
                 .then((response)=>{
+                    self.getExpense();
                     this.$Progress.finish();
-                    this.$snotify.success("Your Status Update Successfully", "Success");
+                    this.$snotify.success(response.data.message, "Success");
                 })
                 .catch(e=>{
                     this.$Progress.fail();
@@ -262,5 +263,12 @@
 .light-row{
     
     background:#F1F3F0;
+}
+.bg-navy {
+    background-color: #001f3f !important;
+    color: whitesmoke;
+}
+.bg-navy:hover{
+    color: white;
 }
 </style>

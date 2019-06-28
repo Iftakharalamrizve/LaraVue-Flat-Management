@@ -67,7 +67,7 @@
             millHitory(){
                 axios.get("/api/mill-history/"+this.m)
                 .then(response=>{
-                    console.log(response);
+                    
                     this.millList=response.data.millHistoryData;
                     this.userMills=response.data.userMill;
                     this.$Progress.finish();

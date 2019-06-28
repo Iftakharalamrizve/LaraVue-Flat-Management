@@ -9,4 +9,8 @@ export default class Gate{
     isUser(){
         return this.user.role === 2;
     }
+
+    currentUserIdReturn(){
+        return this.user.id;
+    }
 }
