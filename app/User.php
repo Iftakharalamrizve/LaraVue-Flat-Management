@@ -38,8 +38,13 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function bill()
+    public function bills()
     {
-        return $this->belongsTo('App\User');
+        return $this->hasMany('App\MillAccounts','user_id');
+    }
+
+    public function mills()
+    {
+        return $this->hasMany('App\MillHistory','user_id');
     }
 }

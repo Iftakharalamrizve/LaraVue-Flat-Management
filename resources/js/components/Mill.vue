@@ -14,10 +14,29 @@
                         <tbody>
                             <tr>
                                 <td v-for=" (mill,index) in millCurrent" :key="index">
-                                    <label class="check ">
+                                    <!-- <label class="check ">
                                         <input type="checkbox"  :checked='mill.mill_status'  @click="check(index)" name="is_name">
+                                        <input type="checkbox"  :checked='mill.second_mill'  @click="second_mill(index)" name="second_mill">
                                         <span class="checkmark"></span>
-                                    </label>
+                                    </label> -->
+                                    <div class="form-group">
+                                        <select v-model="mill.mill_status" @change="check($event,index)">
+                                            <option value="0">Off</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                            <option value="4">Four</option>
+                                            <option value="5">Five</option>
+                                        </select>
+                                        <select v-model="mill.second_mill"  @change="second_mill($event,index)">
+                                            <option value="0">Off</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                            <option value="4">Four</option>
+                                            <option value="5">Five</option>
+                                        </select>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
@@ -49,6 +68,7 @@
         },
         mounted() {
             this.getData();
+            
         },
         methods:{
             getData(){
@@ -66,16 +86,16 @@
                 
             },
             forData(){
-                
                 var currentDate=this.ckDate.myDate
                 //first time when field is creat and save default value in table 
                 if(this.todayMillHistory.length>0){
                     this.todayMillHistory.forEach(singleBill=>{
                         this.millCurrent.push(singleBill);
                     });
+                    
                 }else{
                     this.users.forEach(user=>{
-                        this.millCurrent.push({"mill_status":0,"date":currentDate,'user_id':user.id});
+                        this.millCurrent.push({"mill_status":0,"second_mill":0,"date":currentDate,'user_id':user.id});
                     });
                     this.millCurrent.forEach(singleRequest=>{
                         axios.post('/api/mill',singleRequest)
@@ -84,9 +104,18 @@
                         })
                     })
                 }
+                // console.log(this.millCurrent);
             },
-            check(index){
-                this.millCurrent[index].mill_status=!this.millCurrent[index].mill_status;
+            check(event,index){
+                this.millCurrent[index].mill_status=event.target.value;
+                var updateMill=this.millCurrent[index];
+                axios.put('/api/mill/'+ updateMill.date,updateMill)
+                .then(response=>{
+                     this.$snotify.success("Your Mill Status Is update", "Success");
+                })
+            },
+            second_mill(event,index){
+                this.millCurrent[index].second_mill=event.target.value;
                 var updateMill=this.millCurrent[index];
                 axios.put('/api/mill/'+ updateMill.date,updateMill)
                 .then(response=>{

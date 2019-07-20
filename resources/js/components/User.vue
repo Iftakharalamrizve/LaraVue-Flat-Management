@@ -70,12 +70,12 @@
                         </tr>
                     </tbody>
               </table>
-              <pagination
+              <!-- <pagination
                     v-if="pagination.last_page > 1"
                     :pagination="pagination"
                     :offset="5"
                     @paginate="query === ''? getData() : serachData()"
-                ></pagination>
+                ></pagination> -->
             </div>
             <!-- /.card-body -->
           </div>

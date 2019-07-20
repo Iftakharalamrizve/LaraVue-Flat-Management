@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('isAdmin');
-        return new UserCollection(User::orderBy('id', 'DESC')->paginate(5));
+        return new UserCollection(User::orderBy('id', 'DESC')->get());
     }
 
     public function search($field,$query)

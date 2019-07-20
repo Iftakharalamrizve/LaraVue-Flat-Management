@@ -16,7 +16,10 @@ class MillAccountController extends Controller
      */
     public function index(){
         
-        $data= DB::table('mill_accounts')->join('users','mill_accounts.user_id','=','users.id')->select('mill_accounts.*','users.name')->get();
+        $data= DB::table('mill_accounts')
+        ->join('users','mill_accounts.user_id','=','users.id')
+        ->select('mill_accounts.*','users.name')
+        ->get();
         return $data;
     }
 
@@ -30,11 +33,11 @@ class MillAccountController extends Controller
     {
         $this->validate($request,[
             'expense_type' => 'required',
-            'expense_amount' => 'required'
+            'expense_amount' => 'required',
+            'expense_by' => 'required'
         ]);
-
         return MillAccounts::create([
-            'user_id' => 1,
+            'user_id' => $request->expense_type,
             'expense_type' => $request->expense_type,
             'expense_item_type' => $request->expense_item_type,
             'expense_amount' => $request->expense_amount,
@@ -114,5 +117,25 @@ class MillAccountController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+
+
+    public function findDeposite($id,$month){
+       $date= date('Y') . "-" .$month;
+       $data['deposite_amount']= User::find($id)->bills()
+              ->whereMonth('created_at', '=', date($month))
+              ->where('expense_type',2)
+              ->where('status',1)
+              ->sum('expense_amount');
+        $dayMill=User::find($id)->mills()
+              ->whereMonth('date', '=', date($month))
+              ->sum('mill_status');
+        $nightMill=User::find($id)->mills()
+              ->whereMonth('date', '=', date($month))
+              ->sum('mill_status2');
+        $data['total_mill']=$dayMill+$nightMill;
+        return $data;
     }
 }

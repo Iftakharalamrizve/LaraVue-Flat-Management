@@ -17,7 +17,8 @@ class CreateMillHistoriesTable extends Migration
             $table->bigIncrements('id');
             $table->integer('user_id')->comment("Primay key from user table");
             $table->date('date');
-            $table->tinyInteger('mill_status');
+            $table->tinyInteger('mill_status')->default(0);
+            $table->tinyInteger('mill_status2')->default(0);
             $table->timestamps();
         });
     }

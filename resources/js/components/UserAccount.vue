@@ -2,7 +2,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 offset-md-3">
-                <select v-model="userFidnId" class="form-control" id="fileds">
+                <select v-model="userFidnId" class="form-control" id="fileds" @change="userHistoryChange($event)">
                     <option  v-for="(user,index) in users" :key="index"  :value="user.id">{{user.name}}</option>
                 </select>
             </div>
@@ -30,15 +30,15 @@
                         <div class="stats">
 
                             <div>
-                                <strong>Total Deposite</strong> 3098
+                                <strong>Total Deposite</strong> {{totalDiposite}}
                             </div>
 
                             <div>
-                                <strong>Total Mill</strong> {{userMills[userFidnId]}}
+                                <strong>Total Mill</strong> {{totalUserMill}}
                             </div>
 
                             <div>
-                                <strong>Total Expense</strong> 182
+                                <strong>Total Expense</strong> {{parseFloat(costAmount/totalMill).toFixed(2)*totalUserMill}}
                             </div>
 
                         </div>
@@ -46,11 +46,11 @@
                         <div class="stats">
 
                             <div>
-                                <strong>Mill Rate </strong> 3098
+                                <strong>Mill Rate </strong> {{parseFloat(costAmount/totalMill).toFixed(2)}}
                             </div>
 
                             <div>
-                                <strong>Due/Pay</strong> 562
+                                <strong>Due/Pay</strong> {{parseFloat(totalDiposite-(parseFloat(costAmount/totalMill).toFixed(2)*totalUserMill)).toFixed(2)}}
                             </div>
 
                             <div>
@@ -93,17 +93,23 @@
         data(){
             return{
                 userFidnId:Number,
-                userMills:[],
-                 users:[],
-                 date: new Date(),
-                 month:Number,
+                bills:[],
+                marketList:[],
+                users:[],
+                date: new Date(),
+                month:Number,
+                totalMill:0,
+                costAmount:0,
+                totalUserMill:0,
+                totalDiposite:0
             }
         },
         mounted() {
-           this.getData();
-           this.millHitory();
-           this.month = this.date.getMonth()+1;
-           this.userFidnId=this.$gate.currentUserIdReturn();
+            this.month = this.date.getMonth()+1;
+            this.getData();
+            this.getExpense();
+            this.userFidnId=this.$gate.currentUserIdReturn();;
+            this.userHistoryChange(this.userFidnId);
         },
         methods:{
              getData(){
@@ -118,16 +124,69 @@
                 })
                 
             },
-            millHitory(){
-                axios.get("/api/mill-history/"+this.month)
+             getExpense(){
+                this.$Progress.start();
+                var self=this;
+                axios.get('/api/millexpense/'+this.month)
                 .then(response=>{
-                    this.userMills=response.data.userMill;
+                    self.bills=response.data;
+                    this.getTotalMill();
+                    this.getAmountMarketBill();
+                    this.$Progress.finish();
+                    
+                })
+                .catch(e=>{
+                    this.$Progress.fail();
+                })
+            },
+            getAmountMarketBill(){
+                var self=this;
+                self.costAmount=0;
+                this.bills.forEach((item)=>{
+                    if(item.expense_item_type != null){
+                        // self.marketList.push(item);
+                        if(item.status==1){
+                            self.costAmount += item.expense_amount;
+                        }
+                    }
+                })
+            },
+
+            getTotalMill(){
+                var self=this;
+                this.$Progress.start();
+                axios.get("/api/totalMill/"+this.month)
+                .then(response=>{
+                    self.totalMill=response.data;
                     this.$Progress.finish();
                 })
                 .catch(e=>{
                     this.$Progress.fail();
                 })
+            },
+
+            userHistoryChange(event=null){
+                //total diposite balance
+                const id = event.target == undefined ?event:event.target.value;
+                let self = this;
+                this.$Progress.start();
+                axios.get("/api/diposite_user/"+id+'/'+this.month)
+                .then(response=>{
+                    self.totalUserMill=response.data.total_mill;
+                    self.totalDiposite=response.data.deposite_amount;
+                })
+                .catch(e=>{
+
+                })
+
+
+                //total mill history 
+
+
+                
             }
+
+            
         }
     }
 </script>

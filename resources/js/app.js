@@ -51,6 +51,20 @@ const Snotifyoptions = {
 }
 Vue.use(Snotify, Snotifyoptions)
 
+
+//** import and use vuex */
+import Vuex from 'vuex'
+Vue.use(Vuex)
+
+//**import vuex storage where state data store */
+import {storage} from './components/store/index'
+const store = new Vuex.Store(storage)
+
+
+
+
+
+
 Vue.component(
   'not-found',
   require('./components/Notfound.vue').default
@@ -81,5 +95,6 @@ Vue.component(AlertErrors.name, AlertErrors);
 Vue.component(AlertSuccess.name, AlertSuccess);
 const app = new Vue({
     el: '#app',
+    store,
     router,
 });

@@ -26,3 +26,4 @@ Route::get('mill-history/{month}','API\MillController@millHistoryByMonth');
 Route::get('totalMill/{month}','API\MillController@TotalUserMill');
 Route::get('search/user/{field}/{query}','API\UserController@search');
 // Route::get('profile', 'API\ProfileController@profile');
+Route::get('diposite_user/{id}/{month}', 'API\MillAccountController@findDeposite');

@@ -8,8 +8,9 @@ class MillAccounts extends Model
 {
     //
     protected $fillable = [
-        'user_id', 'expense_type','expense_item_type','expense_amount',
+        'user_id', 'expense_type','expense_item_type','expense_amount'
     ];
+    
     public function addNewAccount($request)
     {
         $request->validate([
@@ -41,6 +42,11 @@ class MillAccounts extends Model
         ];
         $accountId = MillAccounts::update($attribute)->id;
         return $accountId;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo('App\User');
     }
 
     

@@ -16,8 +16,8 @@
                             <tr  v-for=" (mill,index) in millList" :key="index"> 
                                 <th  class="text-center" >{{mill.data[0].date}}</th>
                                 <th class="text-center" v-for=" (singleMill,idx) in mill.data" :key="idx">
-                                    <i v-if="singleMill.mill_status==0" class="fa fa-times text-danger" aria-hidden="true"></i>
-                                    <p v-else class="text-success">{{singleMill.mill_status}}</p>
+                                    <i v-if="(parseInt(singleMill.mill_status)+parseInt(singleMill.second_mill))==0" class="fa fa-times text-danger" aria-hidden="true"></i>
+                                    <p v-else class="text-success">{{singleMill.mill_status+singleMill.second_mill}}</p>
                                 </th>
                             </tr>
                             <tr> 

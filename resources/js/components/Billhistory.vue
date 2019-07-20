@@ -120,6 +120,12 @@
                             <has-error :form="form" field="expense_amount"></has-error>
                         </div>
                         <div class="form-group">
+                            <select name="expense_by" v-model="form.expense_by" id="type" class="form-control" :class="{ 'is-invalid': form.errors.has('expense_by') }">
+                                <option value="">Select Expense By </option>
+                                <option  v-for="(user,index) in allUser" :key="index"  :value="user.id">{{user.name}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <input v-model="form.note" type="text" name="note"
                                 placeholder="Note"
                                 class="form-control" :class="{ 'is-invalid': form.errors.has('note') }">
@@ -147,6 +153,7 @@
                 allAccounts:[],
                 marketList:[],
                 dipositList:[],
+                allUser:[],
                 dipositAmount:0,
                 costAmount:0,
                 date: new Date(),
@@ -158,6 +165,7 @@
                     expense_type:'',
                     expense_item_type: '',
                     expense_amount: '',
+                    expense_by:'',
                     note: '',
                 }),
             }
@@ -165,7 +173,7 @@
         mounted() {
             this.month = this.date.getMonth()+1;
             this.getExpense();
-            
+            this.getUsers();
         },
         methods:{
 
@@ -201,6 +209,18 @@
                             self.dipositAmount += item.expense_amount;
                         }
                     }
+                })
+            },
+            getTotalMill(){
+                var self=this;
+                this.$Progress.start();
+                axios.get("/api/totalMill/"+this.month)
+                .then(response=>{
+                    self.totalMill=response.data;
+                    this.$Progress.finish();
+                })
+                .catch(e=>{
+                    this.$Progress.fail();
                 })
             },
             changeStatus(index){
@@ -240,12 +260,24 @@
                     
                 })
             },
-            getTotalMill(){
-                var self=this;
+            
+            millHitory(){
                 this.$Progress.start();
-                axios.get("/api/totalMill/"+this.month)
+                axios.get("/api/mill-history/"+this.month)
                 .then(response=>{
-                    self.totalMill=response.data;
+                    this.userMills=response.data.userMill;
+                    this.$Progress.finish();
+                })
+                .catch(e=>{
+                    this.$Progress.fail();
+                })
+            },
+
+            getUsers(){
+                this.$Progress.start();
+                axios.get("/api/user")
+                .then(response=>{
+                    this.allUser=response.data.data;
                     this.$Progress.finish();
                 })
                 .catch(e=>{

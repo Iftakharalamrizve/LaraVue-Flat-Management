@@ -14,6 +14,9 @@ use App\User;
 use App\MillHistory;
 class MillController extends Controller
 {
+    public function __construct(){
+        date_default_timezone_set("Asia/Dhaka");
+    }
     /**
      * Display a listing of the resource.
      *
@@ -28,7 +31,6 @@ class MillController extends Controller
                 ->leftjoin('mill_histories','users.id','=','mill_histories.user_id')
                 ->where('date',date("Y-m-d"))
                 ->get());
-
         }
         
         return $data;
@@ -37,7 +39,7 @@ class MillController extends Controller
    
     
     public function millHistoryByMonth($month)
-    {   
+    { 
         //month convert 1-9 to 01-09 for filter data 
         if($month<10){
             $month = '0'.$month;
@@ -54,8 +56,8 @@ class MillController extends Controller
         foreach($users as $user){
             $total_mill=0;
             foreach($dates as $date){
-                $status=MillHistory::where('user_id',$user->id)->where('date','LIKE',"%$date%")->select('mill_status')->first();
-                $everyDayMill=$status["mill_status"];
+                $status=MillHistory::where('user_id',$user->id)->where('date','LIKE',"%$date%")->select('mill_status','mill_status2')->first();
+                $everyDayMill=$status["mill_status"]+$status["mill_status2"];
                 $total_mill +=$everyDayMill;
             }
             $userMill[$user->id]=$total_mill;
@@ -89,8 +91,8 @@ class MillController extends Controller
         foreach($users as $user){
             $total_mill=0;
             foreach($dates as $date){
-                $status=MillHistory::where('user_id',$user->id)->where('date','LIKE',"%$date%")->select('mill_status')->first();
-                $everyDayMill=$status["mill_status"];
+                $status=MillHistory::where('user_id',$user->id)->where('date','LIKE',"%$date%")->select('mill_status','mill_status2')->first();
+                $everyDayMill=$status["mill_status"]+$status["mill_status2"];
                 $total_mill +=$everyDayMill;
             }
             $userMill[$user->id]=$total_mill;
@@ -108,7 +110,7 @@ class MillController extends Controller
      */
     public function store(Request $request)
     {   
-        MillHistory::create(['user_id' => $request->user_id,'date'=>$request->date,'mill_status'=>$request->mill_status]);
+        MillHistory::create(['user_id' => $request->user_id,'date'=>$request->date,'mill_status'=>$request->mill_status,'mill_status2'=>$request->second_mill]);
         
     }
 
@@ -134,6 +136,7 @@ class MillController extends Controller
     {
         $updateMill=MillHistory::where('user_id',$request->user_id)->where('date',$date)->first();
         $updateMill->mill_status=$request->mill_status;
+        $updateMill->mill_status2=$request->second_mill;
         $updateMill->save();
     }
 
@@ -151,6 +154,7 @@ class MillController extends Controller
     //extra 
 
     public function checkPrevioustDate(){
+        
         for($i = 1; $i<=date("d"); $i++)
         {
             // add the date to the dates array
@@ -163,7 +167,7 @@ class MillController extends Controller
             $countNumber=(array)$checkDate;
             if(count($countNumber)<1){
                 for($i=0;$i<$count;$i++){
-                    MillHistory::create(['user_id' => $users[$i]->id,'date'=>$date,'mill_status'=>0]);
+                    MillHistory::create(['user_id' => $users[$i]->id,'date'=>$date,'mill_status'=>0,'mill_status2'=>0]);
                 }
             }
         }
