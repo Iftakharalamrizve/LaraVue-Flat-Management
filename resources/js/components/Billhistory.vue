@@ -8,7 +8,7 @@
         <div class="row mb-3">
             <div class="col-md-9"></div>
             <div class="col-md-3">
-                <button class="btn btn-info" data-toggle="modal" data-target="#addModal">Add New <i class="fa fa fa-money"></i></button>
+                <button class="btn btn-info" data-toggle="modal" data-target="#addModal">Add Bill <i class="far fa-money-bill-alt"></i></button>
                 <button type="button" class="btn btn-primary" >
                     Reload
                     <i class="fa fa-refresh"></i>
@@ -32,9 +32,13 @@
                                 <td>{{billsingle.expense_type==1?'Market':'deposit'}}</td>
                                 <td>{{billsingle.expense_item_type==1?'Kacabazaar':'Others'}}</td>
                                 <td>{{billsingle.expense_amount}}</td>
-                                <td>
+                                <td v-if="$gate.isAdmin()">
                                     <button type="button" v-if="billsingle.status==0" class="btn bg-warning margin btn-sm" v-on:click="changeStatus(billsingle.id)" > Peanding </button>
                                     <button type="button" v-else class="btn bg-navy margin btn-sm" v-on:click="changeStatus(billsingle.id)" > Approved</button>
+                                </td>
+                                <td v-else>
+                                    <span class="text-warning" v-if="billsingle.status==0">Peanding</span>
+                                    <span class="text-success" v-else>Success</span>
                                 </td>
                             </tr>
                         </tbody>
@@ -85,7 +89,7 @@
             </div>
         </div>
         <!-- Modal -->
-        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" v-if="$gate.isAdmin()">
+        <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" >
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                 <div class="modal-header">
@@ -275,7 +279,7 @@
 
             getUsers(){
                 this.$Progress.start();
-                axios.get("/api/user")
+                axios.get("/api/users")
                 .then(response=>{
                     this.allUser=response.data.data;
                     this.$Progress.finish();

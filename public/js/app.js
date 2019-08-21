@@ -1861,6 +1861,10 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -1999,7 +2003,7 @@ __webpack_require__.r(__webpack_exports__);
       var _this6 = this;
 
       this.$Progress.start();
-      axios.get("/api/user").then(function (response) {
+      axios.get("/api/users").then(function (response) {
         _this6.allUser = response.data.data;
 
         _this6.$Progress.finish();
@@ -2037,9 +2041,123 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
-  mounted: function mounted() {
-    console.log('Component mounted.');
+  data: function data() {
+    return {};
   }
 });
 
@@ -2141,22 +2259,51 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       ckDate: {
         myDate: new Date().toISOString().slice(0, 10)
       },
+      ckTime: new Date(),
       users: [],
       todayMillHistory: [],
       millCurrent: [],
-      millHistoryStatus: false
+      millHistoryStatus: false,
+      noonMill: Boolean,
+      dinnerMill: Boolean
     };
   },
   mounted: function mounted() {
     this.getData();
+    this.created();
   },
   methods: {
+    created: function created() {
+      var d = new Date();
+      var hours = d.getHours();
+
+      if (hours <= 8) {
+        this.noonMill = true;
+      } else {
+        this.noonMill = false;
+      }
+
+      if (hours <= 14) {
+        this.dinnerMill = true;
+      } else {
+        this.dinnerMill = false;
+      }
+    },
     getData: function getData() {
       var _this = this;
 
@@ -2199,6 +2346,8 @@ __webpack_require__.r(__webpack_exports__);
     check: function check(event, index) {
       var _this3 = this;
 
+      // console.log(this.millCurrent);
+      // console.log(index);
       this.millCurrent[index].mill_status = event.target.value;
       var updateMill = this.millCurrent[index];
       axios.put('/api/mill/' + updateMill.date, updateMill).then(function (response) {
@@ -2208,6 +2357,8 @@ __webpack_require__.r(__webpack_exports__);
     second_mill: function second_mill(event, index) {
       var _this4 = this;
 
+      // console.log(this.millCurrent);
+      // console.log(index);
       this.millCurrent[index].second_mill = event.target.value;
       var updateMill = this.millCurrent[index];
       axios.put('/api/mill/' + updateMill.date, updateMill).then(function (response) {
@@ -2265,6 +2416,65 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2272,7 +2482,13 @@ __webpack_require__.r(__webpack_exports__);
       millList: [],
       date: new Date(),
       m: Number,
-      userMills: []
+      userMills: [],
+      form: new Form({
+        user_id: '',
+        date: '',
+        mill_status: '',
+        second_mill: ''
+      })
     };
   },
   mounted: function mounted() {
@@ -2288,6 +2504,8 @@ __webpack_require__.r(__webpack_exports__);
         _this.users = response.data.users.data;
 
         _this.millHitory();
+
+        console.log(_this.users);
 
         _this.$Progress.finish();
       })["catch"](function (e) {
@@ -2305,6 +2523,35 @@ __webpack_require__.r(__webpack_exports__);
       })["catch"](function (e) {
         _this2.$Progress.fail();
       });
+    },
+    updateMill: function updateMill() {
+      var _this3 = this;
+
+      this.$Progress.start();
+      this.form.busy = true;
+      this.form.post('api/updateMill').then(function (response) {
+        _this3.getData();
+
+        $('#addModal1').modal('hide');
+
+        _this3.form.reset();
+
+        _this3.form.clear();
+
+        _this3.$Progress.finish();
+
+        _this3.$snotify.success("Mill Update Successfully Saved", "Success");
+      })["catch"](function (e) {
+        if (e != undefined) {
+          _this3.$Progress.fail();
+
+          _this3.$snotify.error("Something went wrong try again later.", "Error");
+        }
+      });
+    },
+    reload: function reload() {
+      this.getData();
+      this.$snotify.success("Data succesfully Refresh", "Success");
     }
   }
 });
@@ -2587,6 +2834,47 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Report.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Report.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+/* harmony default export */ __webpack_exports__["default"] = ({
+  data: function data() {
+    return {
+      date: {
+        month: null,
+        year: null
+      },
+      month: Number,
+      year: '',
+      monthList: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    };
+  },
+  mounted: function mounted() {},
+  methods: {
+    showDate: function showDate(date) {
+      this.date = date;
+    }
+  }
+});
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/User.vue?vue&type=script&lang=js&":
 /*!***************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib??ref--4-0!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/User.vue?vue&type=script&lang=js& ***!
@@ -2738,6 +3026,11 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
@@ -2747,6 +3040,7 @@ __webpack_require__.r(__webpack_exports__);
       pagination: {
         current_page: 1
       },
+      profile: '',
       form: new Form({
         name: '',
         password: '',
@@ -2769,13 +3063,17 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   methods: {
+    onImageChange: function onImageChange(e) {
+      console.log(e.target.files[0]);
+      this.profile = e.target.files[0];
+    },
     getData: function getData() {
       var _this = this;
 
       this.$Progress.start();
 
       if (this.$gate.isAdmin()) {
-        axios.get("/api/user?page=" + this.pagination.current_page).then(function (response) {
+        axios.get("/api/users?page=" + this.pagination.current_page).then(function (response) {
           _this.users = response.data.data;
           _this.pagination = response.data.meta;
 
@@ -2806,8 +3104,25 @@ __webpack_require__.r(__webpack_exports__);
       var _this3 = this;
 
       this.$Progress.start();
-      this.form.busy = true;
-      this.form.post('api/user').then(function (response) {
+      var currentObj = this;
+      var config = {
+        headers: {
+          'content-type': 'multipart/form-data'
+        }
+      };
+      var formData = new FormData();
+      formData.append('profile', this.profile);
+      formData.append('name', this.form.name);
+      formData.append('password', this.form.password);
+      formData.append('email', this.form.email);
+      formData.append('role', this.form.role);
+      formData.append('role', this.form.role);
+      formData.append('phone', this.form.phone);
+      this.form.busy = true; // this.form.post('api/user')
+
+      axios.post('api/users', formData, config).then(function (response) {
+        console.log(response);
+
         _this3.getData();
 
         $('#addModal').modal('hide');
@@ -2966,7 +3281,8 @@ __webpack_require__.r(__webpack_exports__);
       var _this = this;
 
       this.$Progress.start();
-      axios.get("/api/user").then(function (response) {
+      axios.get("/api/users").then(function (response) {
+        console.log(response);
         _this.users = response.data.data;
 
         _this.$Progress.finish();
@@ -8252,6 +8568,44 @@ function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterat
 
 /***/ }),
 
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&":
+/*!***************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css& ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.month-picker-container {\n  width: 400px;\n  position: relative;\n  border: 1px solid #DDDDDD;\n  border-radius: 5px;\n}\n.month-picker {\n  box-sizing: border-box;\n  flex: 1;\n  width: auto;\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n  box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.1);\n  font-family: sans-serif;\n  border-radius: 5px;\n  overflow: hidden;\n}\n.month-picker-year p {\n  width: 100%;\n  font-weight: 600;\n  letter-spacing: 1px;\n  font-size: 1.2em;\n}\n.month-picker-year input {\n  padding: 0;\n  font-weight: 600;\n  border-radius: 5px 5px 0 0;\n  outline: none;\n  border: none;\n  font-size: 1.2em;\n  width: auto;\n  text-align: center;\n  box-sizing: border-box;\n  width: 100%;\n  height: 3em;\n  position: relative;\n  z-index: 1;\n}\n.month-picker-year input:focus {\n  border: 1px solid #55B0F2;\n}\n.month-picker-year div,\n.month-picker-year button,\n.month-picker-year p {\n  text-align: center;\n  flex: 1;\n}\n.month-picker-year button {\n  background-color: #FFFFFF;\n  position: absolute;\n  width: 2em;\n  font-size: 1.5em;\n  border-radius: 5px;\n  outline: none;\n  border: 0;\n  top: 10px;\n  border: 1px solid #E8E8E8;\n  z-index: 2;\n}\n.month-picker-year button:hover {\n  background-color: rgba(0, 0, 0, .025);\n}\n.month-picker-year button:active {\n  background-color: rgba(0, 0, 0, .04);\n}\n.month-picker-year button:first-child {\n  left: 10px;\n}\n.month-picker-year button:last-child {\n  right: 10px;\n}\n.month-picker-month {\n  flex-basis: calc(33.333% - 10px);\n  padding: 0.75em 0.25em;\n  cursor: pointer;\n  text-align: center;\n  border: 1px solid rgba(245, 245, 245, .75);\n  transition: all 250ms cubic-bezier(0.165, 0.84, 0.44, 1);\n  background-color: #FEFEFE;\n}\n.month-picker-month.selected {\n  background-color: #55B0F2;\n  color: #FFFFFF;\n  border-radius: 5px;\n  box-shadow: inset 0 0 3px #3490d2, 0px 2px 5px rgba(85, 176, 242, 0.2);\n  text-shadow: 0 2px 2px rgba(0, 0, 0, .1);\n}\n.month-picker .month-picker-month:hover {\n  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);\n}\n.month-picker--dark {\n  background-color: #5F5F5F;\n}\n.month-picker--dark .month-picker-year p,\n.month-picker--dark .month-picker-year input {\n  color: #EBEBEB;\n}\n.month-picker--dark .month-picker-year button {\n  background-color: #505050;\n  color: #C9C9C9;\n  border-color: #1E1E1E;\n}\n.month-picker--dark .month-picker-month {\n  background-color: #2F2F30;\n  border-color: rgba(245, 245, 245, .15);\n  color: #C9C9C9;\n}\n.month-picker--dark .month-picker-month.selected {\n  background-color: #505050;\n  box-shadow: inset 0 0 3px #505050, 0px 2px 5px #505050;\n  color: #FFFFFF;\n  border-color: #1E1E1E;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base.js */ "./node_modules/css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, "\n.month-picker-input-container[data-v-201d773d] {\n  position: relative;\n  width: 180px;\n  min-width: 140px;\n}\n.month-picker-input[data-v-201d773d] {\n  padding: 1em 1.5em;\n  font-size: .85em;\n  border-radius: 5px;\n  outline: none;\n  border: 1px solid rgba(0,0,0,.15);\n  transition: all 350ms cubic-bezier(0.165, 0.84, 0.44, 1);\n}\n.month-picker-input[data-v-201d773d]:focus {\n  border-color: rgba(0,0,0,.25);\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n}\n.month-picker-container[data-v-201d773d] {\n  position: absolute;\n  top: 3.5em;\n}\n", ""]);
+
+// exports
+
+
+/***/ }),
+
 /***/ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Billhistory.vue?vue&type=style&index=0&lang=css&":
 /*!*****************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Billhistory.vue?vue&type=style&index=0&lang=css& ***!
@@ -8283,7 +8637,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* The check */\n.check {\n    display: block;\n    position: relative;\n    padding-left: 25px;\n    margin-bottom: 12px;\n    padding-right: 15px;\n    cursor: pointer;\n    font-size: 18px;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none;\n}\n\n/* Hide the browser's default checkbox */\n.check input {\n    position: absolute;\n    opacity: 0;\n    cursor: pointer;\n}\n\n/* Create a custom checkbox */\n.checkmark {\n    position: absolute;\n    top: 3px;\n    left: 0;\n    height: 18px;\n    width: 18px;\n    background-color: #fff ;\n    border-color:#f8204f;\n    border-style:solid;\n    border-width:2px;\n}\n\n\n\n/* When the checkbox is checked, add a blue background */\n.check input:checked ~ .checkmark {\n    background-color: #fff  ;\n}\n\n/* Create the checkmark/indicator (hidden when not checked) */\n.checkmark:after {\n    content: \"\";\n    position: absolute;\n    display: none;\n}\n\n/* Show the checkmark when checked */\n.check input:checked ~ .checkmark:after {\n    display: block;\n}\n\n/* Style the checkmark/indicator */\n.check .checkmark:after {\n    left: 5px;\n    top: 1px;\n    width: 5px;\n    height: 10px;\n    border: solid ;\n    border-color:#f8204f;\n    border-width: 0 3px 3px 0;\n    transform: rotate(45deg);\n}\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* The check */\n.check {\n    display: block;\n    position: relative;\n    padding-left: 25px;\n    margin-bottom: 12px;\n    padding-right: 15px;\n    cursor: pointer;\n    font-size: 18px;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none;\n}\n\n/* Hide the browser's default checkbox */\n.check input {\n    position: absolute;\n    opacity: 0;\n    cursor: pointer;\n}\n\n/* Create a custom checkbox */\n.checkmark {\n    position: absolute;\n    top: 3px;\n    left: 0;\n    height: 18px;\n    width: 18px;\n    background-color: #fff ;\n    border-color:#f8204f;\n    border-style:solid;\n    border-width:2px;\n}\n\n\n\n/* When the checkbox is checked, add a blue background */\n.check input:checked ~ .checkmark {\n    background-color: #fff  ;\n}\n\n/* Create the checkmark/indicator (hidden when not checked) */\n.checkmark:after {\n    content: \"\";\n    position: absolute;\n    display: none;\n}\n\n/* Show the checkmark when checked */\n.check input:checked ~ .checkmark:after {\n    display: block;\n}\n\n/* Style the checkmark/indicator */\n.check .checkmark:after {\n    left: 5px;\n    top: 1px;\n    width: 5px;\n    height: 10px;\n    border: solid ;\n    border-color:#f8204f;\n    border-width: 0 3px 3px 0;\n    transform: rotate(45deg);\n}\n\n", ""]);
 
 // exports
 
@@ -8302,7 +8656,7 @@ exports = module.exports = __webpack_require__(/*! ../../../node_modules/css-loa
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* The check */\n.check {\n    display: block;\n    position: relative;\n    padding-left: 25px;\n    margin-bottom: 12px;\n    padding-right: 15px;\n    cursor: pointer;\n    font-size: 18px;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none;\n}\n\n/* Hide the browser's default checkbox */\n.check input {\n    position: absolute;\n    opacity: 0;\n    cursor: pointer;\n}\n\n/* Create a custom checkbox */\n.checkmark {\n    position: absolute;\n    top: 3px;\n    left: 0;\n    height: 18px;\n    width: 18px;\n    background-color: #fff ;\n    border-color:#f8204f;\n    border-style:solid;\n    border-width:2px;\n}\n\n\n\n/* When the checkbox is checked, add a blue background */\n.check input:checked ~ .checkmark {\n    background-color: #fff  ;\n}\n\n/* Create the checkmark/indicator (hidden when not checked) */\n.checkmark:after {\n    content: \"\";\n    position: absolute;\n    display: none;\n}\n\n/* Show the checkmark when checked */\n.check input:checked ~ .checkmark:after {\n    display: block;\n}\n\n/* Style the checkmark/indicator */\n.check .checkmark:after {\n    left: 5px;\n    top: 1px;\n    width: 5px;\n    height: 10px;\n    border: solid ;\n    border-color:#f8204f;\n    border-width: 0 3px 3px 0;\n    transform: rotate(45deg);\n}\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n/* The check */\n.check {\n    display: block;\n    position: relative;\n    padding-left: 25px;\n    margin-bottom: 12px;\n    padding-right: 15px;\n    cursor: pointer;\n    font-size: 18px;\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    -ms-user-select: none;\n    user-select: none;\n}\n\n/* Hide the browser's default checkbox */\n.check input {\n    position: absolute;\n    opacity: 0;\n    cursor: pointer;\n}\n\n/* Create a custom checkbox */\n.checkmark {\n    position: absolute;\n    top: 3px;\n    left: 0;\n    height: 18px;\n    width: 18px;\n    background-color: #fff ;\n    border-color:#f8204f;\n    border-style:solid;\n    border-width:2px;\n}\n\n\n\n/* When the checkbox is checked, add a blue background */\n.check input:checked ~ .checkmark {\n    background-color: #fff  ;\n}\n\n/* Create the checkmark/indicator (hidden when not checked) */\n.checkmark:after {\n    content: \"\";\n    position: absolute;\n    display: none;\n}\n\n/* Show the checkmark when checked */\n.check input:checked ~ .checkmark:after {\n    display: block;\n}\n\n/* Style the checkmark/indicator */\n.check .checkmark:after {\n    left: 5px;\n    top: 1px;\n    width: 5px;\n    height: 10px;\n    border: solid ;\n    border-color:#f8204f;\n    border-width: 0 3px 3px 0;\n    transform: rotate(45deg);\n}\n\n", ""]);
 
 // exports
 
@@ -39264,6 +39618,66 @@ process.umask = function() { return 0; };
 
 /***/ }),
 
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&":
+/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css& ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./MonthPicker.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& */ "./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&");
+
+if(typeof content === 'string') content = [[module.i, content, '']];
+
+var transform;
+var insertInto;
+
+
+
+var options = {"hmr":true}
+
+options.transform = transform
+options.insertInto = undefined;
+
+var update = __webpack_require__(/*! ../../style-loader/lib/addStyles.js */ "./node_modules/style-loader/lib/addStyles.js")(content, options);
+
+if(content.locals) module.exports = content.locals;
+
+if(false) {}
+
+/***/ }),
+
 /***/ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Billhistory.vue?vue&type=style&index=0&lang=css&":
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/style-loader!./node_modules/css-loader??ref--6-1!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src??ref--6-2!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Billhistory.vue?vue&type=style&index=0&lang=css& ***!
@@ -41140,6 +41554,430 @@ AlertSuccess_component.options.__file = "AlertSuccess.vue"
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js&":
+/*!**************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js& ***!
+  \**************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _languages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./languages */ "./node_modules/vue-month-picker/src/languages.js");
+/* harmony import */ var _month_picker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./month-picker */ "./node_modules/vue-month-picker/src/month-picker.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'en',
+  mixins: [_month_picker__WEBPACK_IMPORTED_MODULE_1__["default"]],
+  data() {
+    return {
+      currentMonthIndex: null,
+      year: new Date().getFullYear()
+    }
+  },
+  computed: {
+    monthsByLang: function() {
+      if (this.months !== null && 
+          this.months.length === 12) {
+        return this.months
+      }
+      return _languages__WEBPACK_IMPORTED_MODULE_0__["default"][this.lang]
+    },
+    currentMonth: function() {
+      if (this.currentMonthIndex !== null) {
+        return this.monthsByLang[this.currentMonthIndex]
+      }
+    },
+    date: function() {
+      const month = this.monthsByLang.indexOf(this.currentMonth) + 1
+      const date = new Date(`${this.year}/${month}/01`)
+      const year = date.getFullYear()
+
+      return {
+        from: date,
+        to: new Date(year, month, 1),
+        month: this.monthsByLang[month - 1],
+        monthIndex: month,
+        year: year
+      }
+    }
+  },
+  mounted() {
+    if (this.defaultMonth) {
+      this.selectMonth(this.defaultMonth - 1)
+    } else if (!this.noDefault) {
+      this.selectMonth(0)
+    }
+
+    if (this.defaultYear) {
+      this.year = this.defaultYear
+    }
+  },
+  methods: {
+    onChange() {
+      this.$emit('change', this.date)
+    },
+    selectMonth(index, input = false) {
+      const isAlreadySelected = this.currentMonthIndex === index
+      if (this.clearable && isAlreadySelected) {
+        this.currentMonthIndex = null
+        this.$emit('clear')
+        return
+      }
+
+      if (this.isAlreadySelected) {
+        return
+      }
+
+      this.currentMonthIndex = index
+      this.onChange()
+      if (input) {
+        this.$emit('input', this.date)
+      }
+    },
+    changeYear(value) {
+      this.year += value
+      this.onChange()
+      this.$emit('change-year', this.year)
+    }
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js&":
+/*!*******************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js& ***!
+  \*******************************************************************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _MonthPicker_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MonthPicker.vue */ "./node_modules/vue-month-picker/src/MonthPicker.vue");
+/* harmony import */ var _month_picker__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./month-picker */ "./node_modules/vue-month-picker/src/month-picker.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  name: 'en',
+  mixins: [_month_picker__WEBPACK_IMPORTED_MODULE_2__["default"]],
+  directives: {
+    clickOutside: {
+      bind: function (el, binding, vnode) {
+        el.event = function (event) {
+          if (!(el === event.target || el.contains(event.target))) {
+            vnode.context[binding.expression](event)
+          }
+        }
+        document.body.addEventListener('click', el.event)
+      },
+      unbind: function (el) {
+        document.body.removeEventListener('click', el.event)
+      }
+    }
+  },
+  data() {
+    return {
+      monthPickerVisible: false,
+			selectedDate: null
+    }
+  },
+  components: {
+		MonthPicker: _MonthPicker_vue__WEBPACK_IMPORTED_MODULE_1__["default"]
+	},
+  methods: {
+    populateInput (date) {
+			this.selectedDate = `${date.month}, ${date.year}`
+			this.monthPickerVisible = false
+      this.$emit("input", date)
+		},
+		showMonthPicker () {
+			this.monthPickerVisible = !this.monthPickerVisible
+    },
+    hide () {
+      this.monthPickerVisible = false
+    }
+  }
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086&":
+/*!************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086& ***!
+  \************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      staticClass: "month-picker-container",
+      class: "month-picker--" + _vm.variant
+    },
+    [
+      _vm.showYear
+        ? _c("div", { staticClass: "month-picker-year" }, [
+            _c(
+              "button",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.changeYear(-1)
+                  }
+                }
+              },
+              [_vm._v("\n      ‹\n    ")]
+            ),
+            _vm._v(" "),
+            !_vm.editableYear
+              ? _c("p", [_vm._v("\n      " + _vm._s(_vm.year) + "\n    ")])
+              : _c("input", {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model.number",
+                      value: _vm.year,
+                      expression: "year",
+                      modifiers: { number: true }
+                    }
+                  ],
+                  attrs: { type: "text" },
+                  domProps: { value: _vm.year },
+                  on: {
+                    change: function($event) {
+                      return _vm.onChange()
+                    },
+                    input: function($event) {
+                      if ($event.target.composing) {
+                        return
+                      }
+                      _vm.year = _vm._n($event.target.value)
+                    },
+                    blur: function($event) {
+                      return _vm.$forceUpdate()
+                    }
+                  }
+                }),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                on: {
+                  click: function($event) {
+                    return _vm.changeYear(+1)
+                  }
+                }
+              },
+              [_vm._v("\n      ›\n    ")]
+            )
+          ])
+        : _vm._e(),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "month-picker" },
+        _vm._l(_vm.monthsByLang, function(month, i) {
+          return _c(
+            "div",
+            {
+              key: month,
+              staticClass: "month-picker-month",
+              class: _vm.currentMonth === month ? "selected" : "",
+              on: {
+                click: function($event) {
+                  return _vm.selectMonth(i, true)
+                }
+              }
+            },
+            [_vm._v("\n      " + _vm._s(month) + "\n    ")]
+          )
+        }),
+        0
+      )
+    ]
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true&":
+/*!*****************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true& ***!
+  \*****************************************************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    {
+      directives: [
+        {
+          name: "click-outside",
+          rawName: "v-click-outside",
+          value: _vm.hide,
+          expression: "hide"
+        }
+      ],
+      staticClass: "month-picker-input-container"
+    },
+    [
+      _c("input", {
+        directives: [
+          {
+            name: "model",
+            rawName: "v-model",
+            value: _vm.selectedDate,
+            expression: "selectedDate"
+          }
+        ],
+        staticClass: "month-picker-input",
+        attrs: { type: "text", readonly: "" },
+        domProps: { value: _vm.selectedDate },
+        on: {
+          click: function($event) {
+            return _vm.showMonthPicker()
+          },
+          input: function($event) {
+            if ($event.target.composing) {
+              return
+            }
+            _vm.selectedDate = $event.target.value
+          }
+        }
+      }),
+      _vm._v(" "),
+      _c("month-picker", {
+        directives: [
+          {
+            name: "show",
+            rawName: "v-show",
+            value: _vm.monthPickerVisible,
+            expression: "monthPickerVisible"
+          }
+        ],
+        attrs: {
+          "default-year": _vm.defaultYear,
+          "default-month": _vm.defaultMonth,
+          lang: _vm.lang,
+          months: _vm.months,
+          "no-default": _vm.noDefault,
+          "show-year": _vm.showYear,
+          clearable: _vm.clearable,
+          variant: _vm.variant,
+          "editable-year": _vm.editableYear
+        },
+        on: { input: _vm.populateInput }
+      })
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Billhistory.vue?vue&type=template&id=307551dc&":
 /*!**************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Billhistory.vue?vue&type=template&id=307551dc& ***!
@@ -41207,35 +42045,55 @@ var render = function() {
                           _vm._v(" "),
                           _c("td", [_vm._v(_vm._s(billsingle.expense_amount))]),
                           _vm._v(" "),
-                          _c("td", [
-                            billsingle.status == 0
-                              ? _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn bg-warning margin btn-sm",
-                                    attrs: { type: "button" },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.changeStatus(billsingle.id)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v(" Peanding ")]
-                                )
-                              : _c(
-                                  "button",
-                                  {
-                                    staticClass: "btn bg-navy margin btn-sm",
-                                    attrs: { type: "button" },
-                                    on: {
-                                      click: function($event) {
-                                        return _vm.changeStatus(billsingle.id)
-                                      }
-                                    }
-                                  },
-                                  [_vm._v(" Approved")]
-                                )
-                          ])
+                          _vm.$gate.isAdmin()
+                            ? _c("td", [
+                                billsingle.status == 0
+                                  ? _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn bg-warning margin btn-sm",
+                                        attrs: { type: "button" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.changeStatus(
+                                              billsingle.id
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(" Peanding ")]
+                                    )
+                                  : _c(
+                                      "button",
+                                      {
+                                        staticClass:
+                                          "btn bg-navy margin btn-sm",
+                                        attrs: { type: "button" },
+                                        on: {
+                                          click: function($event) {
+                                            return _vm.changeStatus(
+                                              billsingle.id
+                                            )
+                                          }
+                                        }
+                                      },
+                                      [_vm._v(" Approved")]
+                                    )
+                              ])
+                            : _c("td", [
+                                billsingle.status == 0
+                                  ? _c(
+                                      "span",
+                                      { staticClass: "text-warning" },
+                                      [_vm._v("Peanding")]
+                                    )
+                                  : _c(
+                                      "span",
+                                      { staticClass: "text-success" },
+                                      [_vm._v("Success")]
+                                    )
+                              ])
                         ]
                       )
                     }),
@@ -41309,68 +42167,129 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _vm.$gate.isAdmin()
-        ? _c(
+      _c(
+        "div",
+        {
+          staticClass: "modal fade",
+          attrs: {
+            id: "addModal",
+            tabindex: "-1",
+            role: "dialog",
+            "aria-labelledby": "addModalLabel",
+            "aria-hidden": "true"
+          }
+        },
+        [
+          _c(
             "div",
-            {
-              staticClass: "modal fade",
-              attrs: {
-                id: "addModal",
-                tabindex: "-1",
-                role: "dialog",
-                "aria-labelledby": "addModalLabel",
-                "aria-hidden": "true"
-              }
-            },
+            { staticClass: "modal-dialog", attrs: { role: "document" } },
             [
-              _c(
-                "div",
-                { staticClass: "modal-dialog", attrs: { role: "document" } },
-                [
-                  _c("div", { staticClass: "modal-content" }, [
-                    _vm._m(4),
-                    _vm._v(" "),
-                    _c(
-                      "form",
-                      {
+              _c("div", { staticClass: "modal-content" }, [
+                _vm._m(4),
+                _vm._v(" "),
+                _c(
+                  "form",
+                  {
+                    on: {
+                      submit: function($event) {
+                        $event.preventDefault()
+                        return _vm.crateBill($event)
+                      },
+                      keydown: function($event) {
+                        return _vm.form.onKeydown($event)
+                      }
+                    }
+                  },
+                  [
+                    _c("div", { staticClass: "modal-body" }, [
+                      _c("input", {
+                        directives: [
+                          {
+                            name: "model",
+                            rawName: "v-model",
+                            value: _vm.form.user_id,
+                            expression: "form.user_id"
+                          }
+                        ],
+                        attrs: { type: "hidden", name: "user_id" },
+                        domProps: { value: _vm.form.user_id },
                         on: {
-                          submit: function($event) {
-                            $event.preventDefault()
-                            return _vm.crateBill($event)
-                          },
-                          keydown: function($event) {
-                            return _vm.form.onKeydown($event)
+                          input: function($event) {
+                            if ($event.target.composing) {
+                              return
+                            }
+                            _vm.$set(_vm.form, "user_id", $event.target.value)
                           }
                         }
-                      },
-                      [
-                        _c("div", { staticClass: "modal-body" }, [
-                          _c("input", {
-                            directives: [
-                              {
-                                name: "model",
-                                rawName: "v-model",
-                                value: _vm.form.user_id,
-                                expression: "form.user_id"
-                              }
-                            ],
-                            attrs: { type: "hidden", name: "user_id" },
-                            domProps: { value: _vm.form.user_id },
-                            on: {
-                              input: function($event) {
-                                if ($event.target.composing) {
-                                  return
-                                }
-                                _vm.$set(
-                                  _vm.form,
-                                  "user_id",
-                                  $event.target.value
-                                )
-                              }
-                            }
-                          }),
-                          _vm._v(" "),
+                      }),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-group" },
+                        [
                           _c(
+                            "select",
+                            {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.form.expense_type,
+                                  expression: "form.expense_type"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              class: {
+                                "is-invalid": _vm.form.errors.has(
+                                  "expense_type"
+                                )
+                              },
+                              attrs: { name: "expense_type", id: "type" },
+                              on: {
+                                change: function($event) {
+                                  var $$selectedVal = Array.prototype.filter
+                                    .call($event.target.options, function(o) {
+                                      return o.selected
+                                    })
+                                    .map(function(o) {
+                                      var val =
+                                        "_value" in o ? o._value : o.value
+                                      return val
+                                    })
+                                  _vm.$set(
+                                    _vm.form,
+                                    "expense_type",
+                                    $event.target.multiple
+                                      ? $$selectedVal
+                                      : $$selectedVal[0]
+                                  )
+                                }
+                              }
+                            },
+                            [
+                              _c("option", { attrs: { value: "" } }, [
+                                _vm._v("Expense  Type ")
+                              ]),
+                              _vm._v(" "),
+                              _c("option", { attrs: { value: "1" } }, [
+                                _vm._v("Market")
+                              ]),
+                              _vm._v(" "),
+                              _c("option", { attrs: { value: "2" } }, [
+                                _vm._v("Diposite")
+                              ])
+                            ]
+                          ),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "expense_type" }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _vm.form.expense_type == 1
+                        ? _c(
                             "div",
                             { staticClass: "form-group" },
                             [
@@ -41381,17 +42300,20 @@ var render = function() {
                                     {
                                       name: "model",
                                       rawName: "v-model",
-                                      value: _vm.form.expense_type,
-                                      expression: "form.expense_type"
+                                      value: _vm.form.expense_item_type,
+                                      expression: "form.expense_item_type"
                                     }
                                   ],
                                   staticClass: "form-control",
                                   class: {
                                     "is-invalid": _vm.form.errors.has(
-                                      "expense_type"
+                                      "expense_item_type"
                                     )
                                   },
-                                  attrs: { name: "expense_type", id: "type" },
+                                  attrs: {
+                                    name: "expense_item_type",
+                                    id: "type"
+                                  },
                                   on: {
                                     change: function($event) {
                                       var $$selectedVal = Array.prototype.filter
@@ -41407,7 +42329,7 @@ var render = function() {
                                         })
                                       _vm.$set(
                                         _vm.form,
-                                        "expense_type",
+                                        "expense_item_type",
                                         $event.target.multiple
                                           ? $$selectedVal
                                           : $$selectedVal[0]
@@ -41417,267 +42339,179 @@ var render = function() {
                                 },
                                 [
                                   _c("option", { attrs: { value: "" } }, [
-                                    _vm._v("Expense  Type ")
+                                    _vm._v("Expense Item Type ")
                                   ]),
                                   _vm._v(" "),
                                   _c("option", { attrs: { value: "1" } }, [
-                                    _vm._v("Market")
+                                    _vm._v("Kaca Bazar / Sukna Bazar  ")
                                   ]),
                                   _vm._v(" "),
                                   _c("option", { attrs: { value: "2" } }, [
-                                    _vm._v("Diposite")
+                                    _vm._v("Others")
                                   ])
                                 ]
                               ),
                               _vm._v(" "),
                               _c("has-error", {
-                                attrs: { form: _vm.form, field: "expense_type" }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _vm.form.expense_type == 1
-                            ? _c(
-                                "div",
-                                { staticClass: "form-group" },
-                                [
-                                  _c(
-                                    "select",
-                                    {
-                                      directives: [
-                                        {
-                                          name: "model",
-                                          rawName: "v-model",
-                                          value: _vm.form.expense_item_type,
-                                          expression: "form.expense_item_type"
-                                        }
-                                      ],
-                                      staticClass: "form-control",
-                                      class: {
-                                        "is-invalid": _vm.form.errors.has(
-                                          "expense_item_type"
-                                        )
-                                      },
-                                      attrs: {
-                                        name: "expense_item_type",
-                                        id: "type"
-                                      },
-                                      on: {
-                                        change: function($event) {
-                                          var $$selectedVal = Array.prototype.filter
-                                            .call(
-                                              $event.target.options,
-                                              function(o) {
-                                                return o.selected
-                                              }
-                                            )
-                                            .map(function(o) {
-                                              var val =
-                                                "_value" in o
-                                                  ? o._value
-                                                  : o.value
-                                              return val
-                                            })
-                                          _vm.$set(
-                                            _vm.form,
-                                            "expense_item_type",
-                                            $event.target.multiple
-                                              ? $$selectedVal
-                                              : $$selectedVal[0]
-                                          )
-                                        }
-                                      }
-                                    },
-                                    [
-                                      _c("option", { attrs: { value: "" } }, [
-                                        _vm._v("Expense Item Type ")
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("option", { attrs: { value: "1" } }, [
-                                        _vm._v("Kaca Bazar / Sukna Bazar  ")
-                                      ]),
-                                      _vm._v(" "),
-                                      _c("option", { attrs: { value: "2" } }, [
-                                        _vm._v("Others")
-                                      ])
-                                    ]
-                                  ),
-                                  _vm._v(" "),
-                                  _c("has-error", {
-                                    attrs: {
-                                      form: _vm.form,
-                                      field: "expense_item_type"
-                                    }
-                                  })
-                                ],
-                                1
-                              )
-                            : _vm._e(),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "form-group" },
-                            [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.form.expense_amount,
-                                    expression: "form.expense_amount"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid": _vm.form.errors.has(
-                                    "expense_amount"
-                                  )
-                                },
-                                attrs: {
-                                  type: "number",
-                                  name: "expense_amount",
-                                  placeholder: "Expense Amount"
-                                },
-                                domProps: { value: _vm.form.expense_amount },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.form,
-                                      "expense_amount",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("has-error", {
                                 attrs: {
                                   form: _vm.form,
-                                  field: "expense_amount"
+                                  field: "expense_item_type"
                                 }
-                              })
-                            ],
-                            1
-                          ),
-                          _vm._v(" "),
-                          _c("div", { staticClass: "form-group" }, [
-                            _c(
-                              "select",
-                              {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.form.expense_by,
-                                    expression: "form.expense_by"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid": _vm.form.errors.has(
-                                    "expense_by"
-                                  )
-                                },
-                                attrs: { name: "expense_by", id: "type" },
-                                on: {
-                                  change: function($event) {
-                                    var $$selectedVal = Array.prototype.filter
-                                      .call($event.target.options, function(o) {
-                                        return o.selected
-                                      })
-                                      .map(function(o) {
-                                        var val =
-                                          "_value" in o ? o._value : o.value
-                                        return val
-                                      })
-                                    _vm.$set(
-                                      _vm.form,
-                                      "expense_by",
-                                      $event.target.multiple
-                                        ? $$selectedVal
-                                        : $$selectedVal[0]
-                                    )
-                                  }
-                                }
-                              },
-                              [
-                                _c("option", { attrs: { value: "" } }, [
-                                  _vm._v("Select Expense By ")
-                                ]),
-                                _vm._v(" "),
-                                _vm._l(_vm.allUser, function(user, index) {
-                                  return _c(
-                                    "option",
-                                    {
-                                      key: index,
-                                      domProps: { value: user.id }
-                                    },
-                                    [_vm._v(_vm._s(user.name))]
-                                  )
-                                })
-                              ],
-                              2
-                            )
-                          ]),
-                          _vm._v(" "),
-                          _c(
-                            "div",
-                            { staticClass: "form-group" },
-                            [
-                              _c("input", {
-                                directives: [
-                                  {
-                                    name: "model",
-                                    rawName: "v-model",
-                                    value: _vm.form.note,
-                                    expression: "form.note"
-                                  }
-                                ],
-                                staticClass: "form-control",
-                                class: {
-                                  "is-invalid": _vm.form.errors.has("note")
-                                },
-                                attrs: {
-                                  type: "text",
-                                  name: "note",
-                                  placeholder: "Note"
-                                },
-                                domProps: { value: _vm.form.note },
-                                on: {
-                                  input: function($event) {
-                                    if ($event.target.composing) {
-                                      return
-                                    }
-                                    _vm.$set(
-                                      _vm.form,
-                                      "note",
-                                      $event.target.value
-                                    )
-                                  }
-                                }
-                              }),
-                              _vm._v(" "),
-                              _c("has-error", {
-                                attrs: { form: _vm.form, field: "note" }
                               })
                             ],
                             1
                           )
-                        ]),
-                        _vm._v(" "),
-                        _vm._m(5)
-                      ]
-                    )
-                  ])
-                ]
-              )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-group" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.expense_amount,
+                                expression: "form.expense_amount"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            class: {
+                              "is-invalid": _vm.form.errors.has(
+                                "expense_amount"
+                              )
+                            },
+                            attrs: {
+                              type: "number",
+                              name: "expense_amount",
+                              placeholder: "Expense Amount"
+                            },
+                            domProps: { value: _vm.form.expense_amount },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(
+                                  _vm.form,
+                                  "expense_amount",
+                                  $event.target.value
+                                )
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "expense_amount" }
+                          })
+                        ],
+                        1
+                      ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-group" }, [
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.expense_by,
+                                expression: "form.expense_by"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            class: {
+                              "is-invalid": _vm.form.errors.has("expense_by")
+                            },
+                            attrs: { name: "expense_by", id: "type" },
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.$set(
+                                  _vm.form,
+                                  "expense_by",
+                                  $event.target.multiple
+                                    ? $$selectedVal
+                                    : $$selectedVal[0]
+                                )
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "" } }, [
+                              _vm._v("Select Expense By ")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.allUser, function(user, index) {
+                              return _c(
+                                "option",
+                                { key: index, domProps: { value: user.id } },
+                                [_vm._v(_vm._s(user.name))]
+                              )
+                            })
+                          ],
+                          2
+                        )
+                      ]),
+                      _vm._v(" "),
+                      _c(
+                        "div",
+                        { staticClass: "form-group" },
+                        [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.form.note,
+                                expression: "form.note"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            class: {
+                              "is-invalid": _vm.form.errors.has("note")
+                            },
+                            attrs: {
+                              type: "text",
+                              name: "note",
+                              placeholder: "Note"
+                            },
+                            domProps: { value: _vm.form.note },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.$set(_vm.form, "note", $event.target.value)
+                              }
+                            }
+                          }),
+                          _vm._v(" "),
+                          _c("has-error", {
+                            attrs: { form: _vm.form, field: "note" }
+                          })
+                        ],
+                        1
+                      )
+                    ]),
+                    _vm._v(" "),
+                    _vm._m(5)
+                  ]
+                )
+              ])
             ]
           )
-        : _vm._e(),
+        ]
+      ),
       _vm._v(" "),
       _c("vue-progress-bar"),
       _vm._v(" "),
@@ -41701,7 +42535,10 @@ var staticRenderFns = [
             staticClass: "btn btn-info",
             attrs: { "data-toggle": "modal", "data-target": "#addModal" }
           },
-          [_vm._v("Add New "), _c("i", { staticClass: "fa fa fa-money" })]
+          [
+            _vm._v("Add Bill "),
+            _c("i", { staticClass: "far fa-money-bill-alt" })
+          ]
         ),
         _vm._v(" "),
         _c(
@@ -41828,18 +42665,154 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "container" }, [
-      _c("div", { staticClass: "row justify-content-center" }, [
-        _c("div", { staticClass: "col-md-8" }, [
-          _c("div", { staticClass: "card" }, [
-            _c("div", { staticClass: "card-header" }, [
-              _vm._v("Hekki Component")
-            ]),
-            _vm._v(" "),
-            _c("div", { staticClass: "card-body" }, [
-              _vm._v(
-                "\n                    I'm an example component.\n                "
-              )
+    return _c("div", { staticClass: "row " }, [
+      _c("div", { staticClass: "col-md-12" }, [
+        _c("div", { staticClass: "row mt-5" }, [
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-aqua" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Total Diposite")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("90"),
+                  _c("small", [_vm._v("%")])
+                ])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-red" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Total Market")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("41,410")
+                ])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "clearfix visible-sm-block" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-green" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Mill Rate ")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [_vm._v("760")])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-yellow" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Total Member")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("2,000")
+                ])
+              ])
+            ])
+          ])
+        ]),
+        _vm._v(" "),
+        _c("div", { staticClass: "row mt-5" }, [
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-aqua" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v(" Noon Mill  ")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("90"),
+                  _c("small", [_vm._v("%")])
+                ])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-red" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v(" Night Mill  ")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("41,410")
+                ])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "clearfix visible-sm-block" }),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-green" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Mill Rate ")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [_vm._v("760")])
+              ])
+            ])
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-3 col-sm-6 col-xs-12" }, [
+            _c("div", { staticClass: "info-box" }, [
+              _c("span", { staticClass: "info-box-icon bg-yellow" }, [
+                _c("i", { staticClass: "fa fa-google-plus" })
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "info-box-content" }, [
+                _c("span", { staticClass: "info-box-text" }, [
+                  _vm._v("Total Member")
+                ]),
+                _vm._v(" "),
+                _c("span", { staticClass: "info-box-number" }, [
+                  _vm._v("2,000")
+                ])
+              ])
             ])
           ])
         ])
@@ -41952,133 +42925,261 @@ var render = function() {
                     _vm._l(_vm.millCurrent, function(mill, index) {
                       return _c("td", { key: index }, [
                         _c("div", { staticClass: "form-group" }, [
-                          _c(
-                            "select",
-                            {
-                              directives: [
+                          _vm.noonMill
+                            ? _c(
+                                "select",
                                 {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: mill.mill_status,
-                                  expression: "mill.mill_status"
-                                }
-                              ],
-                              on: {
-                                change: [
-                                  function($event) {
-                                    var $$selectedVal = Array.prototype.filter
-                                      .call($event.target.options, function(o) {
-                                        return o.selected
-                                      })
-                                      .map(function(o) {
-                                        var val =
-                                          "_value" in o ? o._value : o.value
-                                        return val
-                                      })
-                                    _vm.$set(
-                                      mill,
-                                      "mill_status",
-                                      $event.target.multiple
-                                        ? $$selectedVal
-                                        : $$selectedVal[0]
-                                    )
-                                  },
-                                  function($event) {
-                                    return _vm.check($event, index)
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: mill.mill_status,
+                                      expression: "mill.mill_status"
+                                    }
+                                  ],
+                                  on: {
+                                    change: [
+                                      function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value
+                                            return val
+                                          })
+                                        _vm.$set(
+                                          mill,
+                                          "mill_status",
+                                          $event.target.multiple
+                                            ? $$selectedVal
+                                            : $$selectedVal[0]
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.check($event, index)
+                                      }
+                                    ]
                                   }
+                                },
+                                [
+                                  _c("option", { attrs: { value: "0" } }, [
+                                    _vm._v("Off")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "1" } }, [
+                                    _vm._v("One")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "2" } }, [
+                                    _vm._v("Two")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "3" } }, [
+                                    _vm._v("Three")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "4" } }, [
+                                    _vm._v("Four")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "5" } }, [
+                                    _vm._v("Five")
+                                  ])
                                 ]
-                              }
-                            },
-                            [
-                              _c("option", { attrs: { value: "0" } }, [
-                                _vm._v("Off")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "1" } }, [
-                                _vm._v("One")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "2" } }, [
-                                _vm._v("Two")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "3" } }, [
-                                _vm._v("Three")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "4" } }, [
-                                _vm._v("Four")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "5" } }, [
-                                _vm._v("Five")
-                              ])
-                            ]
-                          ),
+                              )
+                            : _c(
+                                "select",
+                                {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: mill.mill_status,
+                                      expression: "mill.mill_status"
+                                    }
+                                  ],
+                                  attrs: { disabled: "" },
+                                  on: {
+                                    change: function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return val
+                                        })
+                                      _vm.$set(
+                                        mill,
+                                        "mill_status",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("option", { attrs: { value: "0" } }, [
+                                    _vm._v("Off")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "1" } }, [
+                                    _vm._v("One")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "2" } }, [
+                                    _vm._v("Two")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "3" } }, [
+                                    _vm._v("Three")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "4" } }, [
+                                    _vm._v("Four")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "5" } }, [
+                                    _vm._v("Five")
+                                  ])
+                                ]
+                              ),
                           _vm._v(" "),
-                          _c(
-                            "select",
-                            {
-                              directives: [
+                          _vm.dinnerMill
+                            ? _c(
+                                "select",
                                 {
-                                  name: "model",
-                                  rawName: "v-model",
-                                  value: mill.second_mill,
-                                  expression: "mill.second_mill"
-                                }
-                              ],
-                              on: {
-                                change: [
-                                  function($event) {
-                                    var $$selectedVal = Array.prototype.filter
-                                      .call($event.target.options, function(o) {
-                                        return o.selected
-                                      })
-                                      .map(function(o) {
-                                        var val =
-                                          "_value" in o ? o._value : o.value
-                                        return val
-                                      })
-                                    _vm.$set(
-                                      mill,
-                                      "second_mill",
-                                      $event.target.multiple
-                                        ? $$selectedVal
-                                        : $$selectedVal[0]
-                                    )
-                                  },
-                                  function($event) {
-                                    return _vm.second_mill($event, index)
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: mill.second_mill,
+                                      expression: "mill.second_mill"
+                                    }
+                                  ],
+                                  on: {
+                                    change: [
+                                      function($event) {
+                                        var $$selectedVal = Array.prototype.filter
+                                          .call($event.target.options, function(
+                                            o
+                                          ) {
+                                            return o.selected
+                                          })
+                                          .map(function(o) {
+                                            var val =
+                                              "_value" in o ? o._value : o.value
+                                            return val
+                                          })
+                                        _vm.$set(
+                                          mill,
+                                          "second_mill",
+                                          $event.target.multiple
+                                            ? $$selectedVal
+                                            : $$selectedVal[0]
+                                        )
+                                      },
+                                      function($event) {
+                                        return _vm.second_mill($event, index)
+                                      }
+                                    ]
                                   }
+                                },
+                                [
+                                  _c("option", { attrs: { value: "0" } }, [
+                                    _vm._v("Off")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "1" } }, [
+                                    _vm._v("One")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "2" } }, [
+                                    _vm._v("Two")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "3" } }, [
+                                    _vm._v("Three")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "4" } }, [
+                                    _vm._v("Four")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "5" } }, [
+                                    _vm._v("Five")
+                                  ])
                                 ]
-                              }
-                            },
-                            [
-                              _c("option", { attrs: { value: "0" } }, [
-                                _vm._v("Off")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "1" } }, [
-                                _vm._v("One")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "2" } }, [
-                                _vm._v("Two")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "3" } }, [
-                                _vm._v("Three")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "4" } }, [
-                                _vm._v("Four")
-                              ]),
-                              _vm._v(" "),
-                              _c("option", { attrs: { value: "5" } }, [
-                                _vm._v("Five")
-                              ])
-                            ]
-                          )
+                              )
+                            : _c(
+                                "select",
+                                {
+                                  directives: [
+                                    {
+                                      name: "model",
+                                      rawName: "v-model",
+                                      value: mill.second_mill,
+                                      expression: "mill.second_mill"
+                                    }
+                                  ],
+                                  attrs: { disabled: "" },
+                                  on: {
+                                    change: function($event) {
+                                      var $$selectedVal = Array.prototype.filter
+                                        .call($event.target.options, function(
+                                          o
+                                        ) {
+                                          return o.selected
+                                        })
+                                        .map(function(o) {
+                                          var val =
+                                            "_value" in o ? o._value : o.value
+                                          return val
+                                        })
+                                      _vm.$set(
+                                        mill,
+                                        "second_mill",
+                                        $event.target.multiple
+                                          ? $$selectedVal
+                                          : $$selectedVal[0]
+                                      )
+                                    }
+                                  }
+                                },
+                                [
+                                  _c("option", { attrs: { value: "0" } }, [
+                                    _vm._v("Off")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "1" } }, [
+                                    _vm._v("One")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "2" } }, [
+                                    _vm._v("Two")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "3" } }, [
+                                    _vm._v("Three")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "4" } }, [
+                                    _vm._v("Four")
+                                  ]),
+                                  _vm._v(" "),
+                                  _c("option", { attrs: { value: "5" } }, [
+                                    _vm._v("Five")
+                                  ])
+                                ]
+                              )
                         ])
                       ])
                     }),
@@ -42098,9 +43199,7 @@ var render = function() {
         1
       ),
       _vm._v(" "),
-      _c("vue-progress-bar"),
-      _vm._v(" "),
-      _c("vue-snotify")
+      _c("vue-progress-bar")
     ],
     1
   )
@@ -42139,6 +43238,40 @@ var render = function() {
                 _vm._v(
                   _vm._s(_vm._f("moment")(Date.now(), " MMMM")) +
                     " Month Mill History"
+                )
+              ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "pull-right" }, [
+                _vm.$gate.isAdmin()
+                  ? _c(
+                      "button",
+                      {
+                        staticClass: "btn btn-info",
+                        attrs: {
+                          "data-toggle": "modal",
+                          "data-target": "#addModal1"
+                        }
+                      },
+                      [
+                        _vm._v("Update Mill  "),
+                        _c("i", { staticClass: "far fa-money-bill-alt" })
+                      ]
+                    )
+                  : _vm._e(),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { type: "button" },
+                    on: { click: _vm.reload }
+                  },
+                  [
+                    _vm._v(
+                      "\n                            Reload\n                            "
+                    ),
+                    _c("i", { staticClass: "fa fa-refresh" })
+                  ]
                 )
               ])
             ]),
@@ -42197,10 +43330,9 @@ var render = function() {
                                     })
                                   : _c("p", { staticClass: "text-success" }, [
                                       _vm._v(
-                                        _vm._s(
-                                          singleMill.mill_status +
-                                            singleMill.second_mill
-                                        )
+                                        _vm._s(singleMill.mill_status) +
+                                          "+" +
+                                          _vm._s(singleMill.second_mill)
                                       )
                                     ])
                               ]
@@ -42241,6 +43373,260 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
+      _vm.$gate.isAdmin()
+        ? _c(
+            "div",
+            {
+              staticClass: "modal fade",
+              attrs: {
+                id: "addModal1",
+                tabindex: "-1",
+                role: "dialog",
+                "aria-labelledby": "addModalLabel",
+                "aria-hidden": "true"
+              }
+            },
+            [
+              _c(
+                "div",
+                { staticClass: "modal-dialog", attrs: { role: "document" } },
+                [
+                  _c("div", { staticClass: "modal-content" }, [
+                    _vm._m(0),
+                    _vm._v(" "),
+                    _c(
+                      "form",
+                      {
+                        on: {
+                          submit: function($event) {
+                            $event.preventDefault()
+                            return _vm.updateMill($event)
+                          },
+                          keydown: function($event) {
+                            return _vm.form.onKeydown($event)
+                          }
+                        }
+                      },
+                      [
+                        _c("div", { staticClass: "modal-body" }, [
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "select",
+                              {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.form.user_id,
+                                    expression: "form.user_id"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                attrs: { name: "expense_by", id: "type" },
+                                on: {
+                                  change: function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.$set(
+                                      _vm.form,
+                                      "user_id",
+                                      $event.target.multiple
+                                        ? $$selectedVal
+                                        : $$selectedVal[0]
+                                    )
+                                  }
+                                }
+                              },
+                              [
+                                _c("option", { attrs: { value: "" } }, [
+                                  _vm._v("Select Member")
+                                ]),
+                                _vm._v(" "),
+                                _vm._l(_vm.users, function(user, index) {
+                                  return _c(
+                                    "option",
+                                    {
+                                      key: index,
+                                      domProps: { value: user.id }
+                                    },
+                                    [_vm._v(_vm._s(user.name))]
+                                  )
+                                })
+                              ],
+                              2
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-group" }, [
+                            _c("input", {
+                              directives: [
+                                {
+                                  name: "model",
+                                  rawName: "v-model",
+                                  value: _vm.form.date,
+                                  expression: "form.date"
+                                }
+                              ],
+                              staticClass: "form-control",
+                              attrs: { type: "date", name: "date" },
+                              domProps: { value: _vm.form.date },
+                              on: {
+                                input: function($event) {
+                                  if ($event.target.composing) {
+                                    return
+                                  }
+                                  _vm.$set(
+                                    _vm.form,
+                                    "date",
+                                    $event.target.value
+                                  )
+                                }
+                              }
+                            })
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "select",
+                              {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.form.mill_status,
+                                    expression: "form.mill_status"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                on: {
+                                  change: function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.$set(
+                                      _vm.form,
+                                      "mill_status",
+                                      $event.target.multiple
+                                        ? $$selectedVal
+                                        : $$selectedVal[0]
+                                    )
+                                  }
+                                }
+                              },
+                              [
+                                _c("option", { attrs: { value: "0" } }, [
+                                  _vm._v("Off")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "1" } }, [
+                                  _vm._v("One")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "2" } }, [
+                                  _vm._v("Two")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "3" } }, [
+                                  _vm._v("Three")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "4" } }, [
+                                  _vm._v("Four")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "5" } }, [
+                                  _vm._v("Five")
+                                ])
+                              ]
+                            )
+                          ]),
+                          _vm._v(" "),
+                          _c("div", { staticClass: "form-group" }, [
+                            _c(
+                              "select",
+                              {
+                                directives: [
+                                  {
+                                    name: "model",
+                                    rawName: "v-model",
+                                    value: _vm.form.second_mill,
+                                    expression: "form.second_mill"
+                                  }
+                                ],
+                                staticClass: "form-control",
+                                on: {
+                                  change: function($event) {
+                                    var $$selectedVal = Array.prototype.filter
+                                      .call($event.target.options, function(o) {
+                                        return o.selected
+                                      })
+                                      .map(function(o) {
+                                        var val =
+                                          "_value" in o ? o._value : o.value
+                                        return val
+                                      })
+                                    _vm.$set(
+                                      _vm.form,
+                                      "second_mill",
+                                      $event.target.multiple
+                                        ? $$selectedVal
+                                        : $$selectedVal[0]
+                                    )
+                                  }
+                                }
+                              },
+                              [
+                                _c("option", { attrs: { value: "0" } }, [
+                                  _vm._v("Off")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "1" } }, [
+                                  _vm._v("One")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "2" } }, [
+                                  _vm._v("Two")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "3" } }, [
+                                  _vm._v("Three")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "4" } }, [
+                                  _vm._v("Four")
+                                ]),
+                                _vm._v(" "),
+                                _c("option", { attrs: { value: "5" } }, [
+                                  _vm._v("Five")
+                                ])
+                              ]
+                            )
+                          ])
+                        ]),
+                        _vm._v(" "),
+                        _vm._m(1)
+                      ]
+                    )
+                  ])
+                ]
+              )
+            ]
+          )
+        : _vm._e(),
+      _vm._v(" "),
       _c("vue-progress-bar"),
       _vm._v(" "),
       _c("vue-snotify")
@@ -42248,7 +43634,52 @@ var render = function() {
     1
   )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-header" }, [
+      _c("h5", { staticClass: "modal-title", attrs: { id: "addModalLabel" } }, [
+        _vm._v("Update Mill History")
+      ]),
+      _vm._v(" "),
+      _c(
+        "button",
+        {
+          staticClass: "close",
+          attrs: {
+            type: "button",
+            "data-dismiss": "modal",
+            "aria-label": "Close"
+          }
+        },
+        [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "modal-footer" }, [
+      _c(
+        "button",
+        {
+          staticClass: "btn btn-danger",
+          attrs: { type: "button", "data-dismiss": "modal" }
+        },
+        [_vm._v("Close")]
+      ),
+      _vm._v(" "),
+      _c(
+        "button",
+        { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+        [_vm._v("Create")]
+      )
+    ])
+  }
+]
 render._withStripped = true
 
 
@@ -42868,6 +44299,41 @@ render._withStripped = true
 
 /***/ }),
 
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Report.vue?vue&type=template&id=24c36d42&":
+/*!*********************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/Report.vue?vue&type=template&id=24c36d42& ***!
+  \*********************************************************************************************************************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return staticRenderFns; });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "row" }, [
+    _c(
+      "div",
+      { staticClass: "col-md-6 offset-md-3" },
+      [
+        _c("label", { attrs: { for: "" } }, [_vm._v("Select Month :")]),
+        _vm._v("\n        " + _vm._s(_vm.date.month) + "\n        "),
+        _c("month-picker", { on: { change: _vm.showDate } })
+      ],
+      1
+    )
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
 /***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/User.vue?vue&type=template&id=d884f594&":
 /*!*******************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib??vue-loader-options!./resources/js/components/User.vue?vue&type=template&id=d884f594& ***!
@@ -43076,6 +44542,7 @@ var render = function() {
                     _c(
                       "form",
                       {
+                        attrs: { enctype: "multipart/form-data" },
                         on: {
                           submit: function($event) {
                             $event.preventDefault()
@@ -43324,6 +44791,26 @@ var render = function() {
                               _vm._v(" "),
                               _c("has-error", {
                                 attrs: { form: _vm.form, field: "password" }
+                              })
+                            ],
+                            1
+                          ),
+                          _vm._v(" "),
+                          _c(
+                            "div",
+                            { staticClass: "form-group" },
+                            [
+                              _c("input", {
+                                staticClass: "form-control",
+                                class: {
+                                  "is-invalid": _vm.form.errors.has("prfile")
+                                },
+                                attrs: { type: "file", name: "prfile" },
+                                on: { change: _vm.onImageChange }
+                              }),
+                              _vm._v(" "),
+                              _c("has-error", {
+                                attrs: { form: _vm.form, field: "prfile" }
                               })
                             ],
                             1
@@ -43579,7 +45066,7 @@ var render = function() {
     "div",
     { staticClass: "container-fluid" },
     [
-      _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "row mt-5" }, [
         _c("div", { staticClass: "col-md-6 offset-md-3" }, [
           _c(
             "select",
@@ -43627,7 +45114,7 @@ var render = function() {
         ])
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "row mt-2" }, [
         _c("div", { staticClass: "col-md-6 offset-md-3" }, [
           _c("div", { staticClass: "tile" }, [
             _c("div", { staticClass: "wrapper" }, [
@@ -43635,7 +45122,26 @@ var render = function() {
               _vm._v(" "),
               _vm._m(0),
               _vm._v(" "),
-              _vm._m(1),
+              _c("div", { staticClass: "dates" }, [
+                _c("div", { staticClass: "start" }, [
+                  _c("strong", [_vm._v("STARTS")]),
+                  _vm._v(
+                    " 1-" +
+                      _vm._s(_vm._f("moment")(Date.now(), " MMM-Y")) +
+                      "\n                            "
+                  ),
+                  _c("span")
+                ]),
+                _vm._v(" "),
+                _c("div", { staticClass: "ends" }, [
+                  _c("strong", [_vm._v("ENDS")]),
+                  _vm._v(
+                    " " +
+                      _vm._s(_vm._f("moment")(Date.now(), " D-MMM-Y")) +
+                      "\n                        "
+                  )
+                ])
+              ]),
               _vm._v(" "),
               _c("div", { staticClass: "stats" }, [
                 _c("div", [
@@ -43698,10 +45204,10 @@ var render = function() {
                   )
                 ]),
                 _vm._v(" "),
-                _vm._m(2)
+                _vm._m(1)
               ]),
               _vm._v(" "),
-              _vm._m(3),
+              _vm._m(2),
               _vm._v(" "),
               _c("div", { staticClass: "footer" })
             ])
@@ -43727,23 +45233,6 @@ var staticRenderFns = [
       _c("img", {
         attrs: { src: "http://via.placeholder.com/640x360", alt: "Image 1" }
       })
-    ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "dates" }, [
-      _c("div", { staticClass: "start" }, [
-        _c("strong", [_vm._v("STARTS")]),
-        _vm._v(" 12:30 JAN 2015\n                            "),
-        _c("span")
-      ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "ends" }, [
-        _c("strong", [_vm._v("ENDS")]),
-        _vm._v(" 14:30 JAN 2015\n                        ")
-      ])
     ])
   },
   function() {
@@ -49669,6 +51158,346 @@ Object.defineProperty(exports, '__esModule', { value: true });
 })));
 
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPicker.vue":
+/*!***********************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPicker.vue ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MonthPicker.vue?vue&type=template&id=f4204086& */ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086&");
+/* harmony import */ var _MonthPicker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MonthPicker.vue?vue&type=script&lang=js& */ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MonthPicker.vue?vue&type=style&index=0&lang=css& */ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _MonthPicker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "node_modules/vue-month-picker/src/MonthPicker.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js&":
+/*!************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js& ***!
+  \************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib??vue-loader-options!./MonthPicker.vue?vue&type=script&lang=js& */ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&":
+/*!********************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css& ***!
+  \********************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../style-loader!../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./MonthPicker.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086&":
+/*!******************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086& ***!
+  \******************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../vue-loader/lib??vue-loader-options!./MonthPicker.vue?vue&type=template&id=f4204086& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPicker.vue?vue&type=template&id=f4204086&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPicker_vue_vue_type_template_id_f4204086___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPickerInput.vue":
+/*!****************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPickerInput.vue ***!
+  \****************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true& */ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true&");
+/* harmony import */ var _MonthPickerInput_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MonthPickerInput.vue?vue&type=script&lang=js& */ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& */ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&");
+/* harmony import */ var _vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../../vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
+  _MonthPickerInput_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  "201d773d",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "node_modules/vue-month-picker/src/MonthPickerInput.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js&":
+/*!*****************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js& ***!
+  \*****************************************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib??vue-loader-options!./MonthPickerInput.vue?vue&type=script&lang=js& */ "./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&":
+/*!*************************************************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& ***!
+  \*************************************************************************************************************************/
+/*! no static exports found */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../style-loader!../../css-loader??ref--6-1!../../vue-loader/lib/loaders/stylePostLoader.js!../../postcss-loader/src??ref--6-2!../../vue-loader/lib??vue-loader-options!./MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css& */ "./node_modules/style-loader/index.js!./node_modules/css-loader/index.js?!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/src/index.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=style&index=0&id=201d773d&scoped=true&lang=css&");
+/* harmony import */ var _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+ /* harmony default export */ __webpack_exports__["default"] = (_style_loader_index_js_css_loader_index_js_ref_6_1_vue_loader_lib_loaders_stylePostLoader_js_postcss_loader_src_index_js_ref_6_2_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_style_index_0_id_201d773d_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0___default.a); 
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true&":
+/*!***********************************************************************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true& ***!
+  \***********************************************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../vue-loader/lib??vue-loader-options!./MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./node_modules/vue-month-picker/src/MonthPickerInput.vue?vue&type=template&id=201d773d&scoped=true&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _vue_loader_lib_loaders_templateLoader_js_vue_loader_options_vue_loader_lib_index_js_vue_loader_options_MonthPickerInput_vue_vue_type_template_id_201d773d_scoped_true___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/index.js":
+/*!****************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/index.js ***!
+  \****************************************************/
+/*! exports provided: default, MonthPicker, MonthPickerInput */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _MonthPicker_vue__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./MonthPicker.vue */ "./node_modules/vue-month-picker/src/MonthPicker.vue");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MonthPicker", function() { return _MonthPicker_vue__WEBPACK_IMPORTED_MODULE_0__["default"]; });
+
+/* harmony import */ var _MonthPickerInput_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./MonthPickerInput.vue */ "./node_modules/vue-month-picker/src/MonthPickerInput.vue");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "MonthPickerInput", function() { return _MonthPickerInput_vue__WEBPACK_IMPORTED_MODULE_1__["default"]; });
+
+
+
+
+function plugin (Vue) {
+  Vue.component('month-picker', _MonthPicker_vue__WEBPACK_IMPORTED_MODULE_0__["default"])
+  Vue.component('month-picker-input', _MonthPickerInput_vue__WEBPACK_IMPORTED_MODULE_1__["default"])
+}
+
+// Install by default if using the script tag
+if (typeof window !== 'undefined' && window.Vue) {
+  window.Vue.use(plugin)
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (plugin);
+
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/languages.js":
+/*!********************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/languages.js ***!
+  \********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ({
+  af: ['Januarie', 'Februarie', 'Maart', 'April', 'Mei', 'Junie', 'Julie', 'Augustus', 'September', 'Oktober', 'November', 'Desember'],
+  ar: ['كانون الثاني', 'شهر فبراير', 'مارس', 'أبريل', 'قد', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'شهر اكتوبر', 'شهر نوفمبر', 'ديسمبر'],
+  cs: ['Leden', 'Únor', 'Březen', 'Duben', 'Smět', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'],
+  da: ['Januar', 'Februar', 'Marts', 'April', 'Kan', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'December'],
+  el: ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Ενδέχεται', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'],
+  en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+  es: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+  et: ['Jaanuar', 'Veebruar', 'Märts', 'Aprill', 'Mai', 'Juuni', 'Juuli', 'August', 'September', 'Oktoober', 'November', 'Detsember'],
+  fi: ['Tammikuu', 'Helmikuu', 'Maaliskuu', 'Huhtikuu', 'Saattaa', 'Kesäkuuta', 'Heinäkuu', 'Elokuu', 'Syyskuu', 'Lokakuu', 'Marraskuu', 'Joulukuu'],
+  fr: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+  hi: ['जनवरी ', 'फ़रवरी', 'मार्च', 'अप्रैल', 'मई', 'जून', 'जुलाई', 'अगस्त', 'सितंबर', 'अक्टूबर', 'नवंबर', 'दिसम्बर'],
+  hr: ['Siječanj', 'Veljača', 'Ožujak', 'Travanj', 'Svibanj', 'Lipanj', 'Srpanj', 'Kolovoz', 'Rujan', 'Listopad', 'Studeni', 'Prosinac'],
+  hu: ['Január', 'Február', 'Március', 'Április', 'Lehet', 'Június', 'Július', 'Augusztus', 'Szeptember', 'Október', 'November', 'December'],
+  id: ['Januari', 'Februari', 'Maret', 'April', 'Mungkin', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'],
+  is: ["Janúar", "Febrúar", "Mars", "Apríl", "Maí", "Júní", "Júlí", "Ágúst", 'September', 'Október', "Nóvember", "Desember"],
+  it: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Potrebbe', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+  ja: ['1月', '2月', '行進', '「4月」', '5月', '六月', '「7月」', '「8月」', '9月', '10月', '「11月」', '「12月」'],
+  km: ['មករា', 'កុម្ភៈ', 'ខែមីនា', 'មេសា', 'ឧសភា', 'មិថុនា', 'កក្កដា', 'សីហា', 'កញ្ញា', 'តុលា', 'ខែវិច្ឆិកា', 'ខែធ្នូ'],
+  ko: ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"],
+  ku: ['Rêbendan', 'Reşemî', 'Adar', 'Avrêl', 'Gulan', 'Pûşper', 'Tîrmeh', 'Tebax', 'Îlon', 'Cotmeh', 'Mijdar', 'Berfanbar'],
+  lt: ['Sausis', 'Vasario mėn', 'Kovas', 'Balandis', 'Gegužė', 'Birželis', 'Liepos', 'Rugpjūtis', 'Rugsėjis', 'Spalio mėn', 'Lapkritis', 'Gruodis'],
+  lv: ["Janvāris", "Februāris", "Marts", "Aprīlis", "Maijs", 'Jūnijs', "Jūlijs", 'Augusts', "Septembris", "Oktobris", "Novembris", 'Decembris'],
+  ms: ['Januari', 'Februari', 'Mac', 'April', 'Mungkin', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'],
+  ne: ['जनवरी', 'फेब्रुअरी', 'मार्च', 'अप्रिल', 'सक्छ', 'जुन', 'जुलाई', 'अगस्ट', 'सेप्टेम्बर', 'अक्टोबर', 'नोभेम्बर', 'डिसेम्बर'],
+  nl: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December'],
+  no: ['Januar', 'Februar', 'Mars', 'April', 'May', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Desember'],
+  pa: ['ਜਨਵਰੀ', 'ਫਰਵਰੀ', 'ਮਾਰਚ', 'ਅਪ੍ਰੈਲ', 'ਮਈ', 'ਜੂਨ', 'ਜੁਲਾਈ', 'ਅਗਸਤ', 'ਸਤੰਬਰ', 'ਅਕਤੂਬਰ', 'ਨਵੰਬਰ', 'ਦਸੰਬਰ'],
+  pl: ['Styczeń', 'Luty', 'Marsz', 'Kwiecień', 'Może', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień'],
+  pt: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'],
+  ru: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+  sv: ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'],
+  sk: ['Január', 'Február', 'Marec', 'Apríl', 'Smieť', 'Jún', 'Júla', 'August', 'September', 'Október', 'Novembra', 'December'],
+  sl: ['Januar', "Februar", "Marec", "April", "Maj", 'Junij', "Julij", "Avgust", "September", "Oktober", "November", "December"],
+  so: ['Janaayo', 'Febraayo', 'Maarso', 'Abriil', 'Laga yaabaa', 'Juun', 'July', 'Agoosto', 'Sebtembar', 'Oktoobar', 'November', 'December'],
+  sq: ['Janar', 'Shkurt', 'Marsh', 'Prill', 'Mund', 'Qershor', 'Korrik', 'Gusht', 'Shtator', 'Tetor', 'Nëntor', 'Dhjetor'],
+  th: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'อาจ', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'],
+  tr: ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs ayı', 'Haziran', 'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'],
+  uk: ["Січень", "Лютий", "Березень", "Квітень", 'Може', "Червень", "Липень", "Серпень", 'Вересень', "Жовтень", 'Листопад', 'Грудень'],
+  ur: ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'],
+  vi: ['Tháng một', 'Tháng hai', 'Tháng ba', 'Tháng tư', 'Tháng năm', 'Tháng sáu', 'Tháng bảy', 'Tháng tám', 'Tháng chín', 'Tháng mười', 'Tháng mười một', 'Tháng mười hai'],
+  yi: ['יאנואר', 'פעברואַר', 'מאַרץ', 'אפריל', 'מייַ', 'יוני', 'יולי', 'אויגוסט', 'סעפטעמבער', 'אקטאבער', 'נאוועמבער', 'דעצעמבער'],
+  zh: ['一月', '二月', '游行', '四月', '可以', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  zu: ['Januwari', 'Febhuwari', 'Mashi', 'April', 'Kwangathi', 'Juni', 'Julayi', 'Agasti', 'September', 'Okthoba', 'Novemba', 'December']
+});
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-month-picker/src/month-picker.js":
+/*!***********************************************************!*\
+  !*** ./node_modules/vue-month-picker/src/month-picker.js ***!
+  \***********************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _languages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./languages */ "./node_modules/vue-month-picker/src/languages.js");
+
+
+/* harmony default export */ __webpack_exports__["default"] = ({
+  props: {
+    lang: {
+      type: String,
+      default: 'en',
+      validator: function (value) {
+        return Object.keys(_languages__WEBPACK_IMPORTED_MODULE_0__["default"]).some(l => Object.is(l, value))
+      },
+      required: false
+    },
+    months: {
+      type: Array,
+      default: null,
+      validator: function (value) {
+        return value.length === 12
+      },
+      required: false
+    },
+    defaultMonth: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    defaultYear: {
+      type: Number,
+      default: null,
+      required: false
+    },
+    showYear: {
+      type: Boolean,
+      default: true,
+      required: false
+    },
+    editableYear: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    noDefault: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    clearable: {
+      type: Boolean,
+      default: false,
+      required: false
+    },
+    variant: {
+      type: String,
+      default: 'default',
+      required: false,
+      validator: function (value) {
+        return ['default', 'dark'].includes(value)
+      }
+    }
+  }
+});
 
 /***/ }),
 
@@ -66936,6 +68765,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var vue_snotify__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! vue-snotify */ "./node_modules/vue-snotify/vue-snotify.esm.js");
 /* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
 /* harmony import */ var _components_store_index__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./components/store/index */ "./resources/js/components/store/index.js");
+/* harmony import */ var vue_month_picker__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! vue-month-picker */ "./node_modules/vue-month-picker/src/index.js");
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
@@ -66959,7 +68789,7 @@ var VueProgressBarOptions = {
   failedColor: '#87111d',
   thickness: '5px',
   transition: {
-    speed: '0.2s',
+    speed: '0.1s',
     opacity: '0.6s',
     termination: 300
   },
@@ -66986,7 +68816,12 @@ Vue.use(vue_snotify__WEBPACK_IMPORTED_MODULE_5__["default"], Snotifyoptions); //
 Vue.use(vuex__WEBPACK_IMPORTED_MODULE_6__["default"]); //**import vuex storage where state data store */
 
 
-var store = new vuex__WEBPACK_IMPORTED_MODULE_6__["default"].Store(_components_store_index__WEBPACK_IMPORTED_MODULE_7__["storage"]);
+var store = new vuex__WEBPACK_IMPORTED_MODULE_6__["default"].Store(_components_store_index__WEBPACK_IMPORTED_MODULE_7__["storage"]); //import month year picker 
+
+
+
+Vue.use(vue_month_picker__WEBPACK_IMPORTED_MODULE_8__["default"]);
+Vue.use(vue_month_picker__WEBPACK_IMPORTED_MODULE_8__["default"]);
 Vue.component('not-found', __webpack_require__(/*! ./components/Notfound.vue */ "./resources/js/components/Notfound.vue")["default"]);
 Vue.component('mill-history', __webpack_require__(/*! ./components/Millhistory.vue */ "./resources/js/components/Millhistory.vue")["default"]);
 Vue.component('passport-clients', __webpack_require__(/*! ./components/passport/Clients.vue */ "./resources/js/components/passport/Clients.vue")["default"]);
@@ -67707,6 +69542,75 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/Report.vue":
+/*!********************************************!*\
+  !*** ./resources/js/components/Report.vue ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Report.vue?vue&type=template&id=24c36d42& */ "./resources/js/components/Report.vue?vue&type=template&id=24c36d42&");
+/* harmony import */ var _Report_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Report.vue?vue&type=script&lang=js& */ "./resources/js/components/Report.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+
+var component = Object(_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
+  _Report_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+  _Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__["render"],
+  _Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"],
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/Report.vue"
+/* harmony default export */ __webpack_exports__["default"] = (component.exports);
+
+/***/ }),
+
+/***/ "./resources/js/components/Report.vue?vue&type=script&lang=js&":
+/*!*********************************************************************!*\
+  !*** ./resources/js/components/Report.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Report_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib??ref--4-0!../../../node_modules/vue-loader/lib??vue-loader-options!./Report.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Report.vue?vue&type=script&lang=js&");
+/* empty/unused harmony star reexport */ /* harmony default export */ __webpack_exports__["default"] = (_node_modules_babel_loader_lib_index_js_ref_4_0_node_modules_vue_loader_lib_index_js_vue_loader_options_Report_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+
+/***/ }),
+
+/***/ "./resources/js/components/Report.vue?vue&type=template&id=24c36d42&":
+/*!***************************************************************************!*\
+  !*** ./resources/js/components/Report.vue?vue&type=template&id=24c36d42& ***!
+  \***************************************************************************/
+/*! exports provided: render, staticRenderFns */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib??vue-loader-options!./Report.vue?vue&type=template&id=24c36d42& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js?!./node_modules/vue-loader/lib/index.js?!./resources/js/components/Report.vue?vue&type=template&id=24c36d42&");
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "render", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__["render"]; });
+
+/* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Report_vue_vue_type_template_id_24c36d42___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
+
+
+
+/***/ }),
+
 /***/ "./resources/js/components/User.vue":
 /*!******************************************!*\
   !*** ./resources/js/components/User.vue ***!
@@ -68169,13 +70073,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Billhistory__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/Billhistory */ "./resources/js/components/Billhistory.vue");
 /* harmony import */ var _components_Mill__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/Mill */ "./resources/js/components/Mill.vue");
 /* harmony import */ var _components_UserAccount__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/UserAccount */ "./resources/js/components/UserAccount.vue");
+/* harmony import */ var _components_Report__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/Report */ "./resources/js/components/Report.vue");
 
 
 
 
 
 
- // 
+
+ // Report
 
 var routes = [{
   path: '/dashboard',
@@ -68198,6 +70104,9 @@ var routes = [{
 }, {
   path: '/user-accounts',
   component: _components_UserAccount__WEBPACK_IMPORTED_MODULE_6__["default"]
+}, {
+  path: '/report',
+  component: _components_Report__WEBPACK_IMPORTED_MODULE_7__["default"]
 }];
 
 /***/ }),

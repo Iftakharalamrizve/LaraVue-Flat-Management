@@ -11,186 +11,262 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- CSRF Token -->
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>AdminLTE 3 | Starter</title>
-
   <!-- Styles -->
-  <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="plugins/font-awesome/css/font-awesome.min.css">
+  <!-- IonIcons -->
+  <link rel="stylesheet" href="http://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{{asset('dist/css/adminlte.min.css')}}">
+  <link href="{{ asset('css/sidebar.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+        crossorigin="anonymous">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
 <body class="hold-transition sidebar-mini">
-<div class="wrapper" id="app">
-
-  <!-- Navbar -->
-  <nav class="main-header navbar navbar-expand bg-white navbar-light border-bottom">
-    <!-- Left navbar links -->
-    <ul class="navbar-nav">
-      <li class="nav-item">
-        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
-      </li>
-    </ul>
-
-    <!-- SEARCH FORM -->
-    <form class="form-inline ml-3">
-      <div class="input-group input-group-sm">
-        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
-        <div class="input-group-append">
-          <button class="btn btn-navbar" type="submit">
-            <i class="fa fa-search"></i>
-          </button>
-        </div>
-      </div>
-    </form>
-  </nav>
-  <!-- /.navbar -->
-
-  <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+<div  id="app">
+  <div class="page-wrapper chiller-theme toggled">
+    <a id="show-sidebar" class="btn btn-sm btn-dark" href="#">
+      <i class="fas fa-bars"></i>
     </a>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-      <!-- Sidebar user panel (optional) -->
-      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-        <div class="image">
+    <nav id="sidebar" class="sidebar-wrapper">
+      <div class="sidebar-content">
+        <div class="sidebar-brand">
+          <a href="#">pro sidebar</a>
+          <div id="close-sidebar">
+            <i class="fas fa-times"></i>
+          </div>
         </div>
-        <div class="info">
-        <a href="#" class="d-block">{{Auth::user()->name}}</a>
+        <div class="sidebar-header">
+          <div class="user-pic">
+            <img class="img-responsive img-rounded" src="https://raw.githubusercontent.com/azouaoui-med/pro-sidebar-template/gh-pages/src/img/user.jpg"
+              alt="User picture">
+          </div>
+          <div class="user-info">
+            <span class="user-name">
+              <strong>{{Auth::user()->name}}</strong>
+            </span>
+            <span class="user-role">Administrator</span>
+            <span class="user-status">
+              <i class="fa fa-circle"></i>
+              <span>Online</span>
+            </span>
+          </div>
         </div>
-      </div>
-
-      <!-- Sidebar Menu -->
-      <nav class="mt-2">
-        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-              <li class="nav-item">
-              <router-link to="/dashboard" class="nav-link">
-                  <i class="nav-icon fa fa-dashboard teal"></i>
-                <p>
-                 Dashboard
-                </p>
+        <!-- sidebar-header  -->
+        <div class="sidebar-search">
+          <div>
+            <div class="input-group">
+              <input type="text" class="form-control search-menu" placeholder="Search...">
+              <div class="input-group-append">
+                <span class="input-group-text">
+                  <i class="fa fa-search" aria-hidden="true"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- sidebar-search  -->
+        <div class="sidebar-menu">
+          <ul class="" style="text-align: left;">
+            <li class="header-menu">
+              <span>General</span>
+            </li>
+            <li class="sidebar-dropdown">
+              <router-link to="/dashboard" >
+                <i class="fa fa-tachometer-alt"></i>
+                <span>Dashboard</span>
               </router-link>
             </li>
-          <li class="nav-item has-treeview ">
-            <a href="#" class="nav-link ">
-              <i class="nav-icon fa fa-cog indigo"></i>
-              <p>
-                Management
-                <i class="right fa fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              @can('isAdmin')
-              <li class="nav-item">
-                <router-link to="/users" class="nav-link ">
-                  <i class="fa fa-users nav-icon purple"></i>
-                  <p>Users</p>
-                </router-link>
-              </li>
-              @endcan
-              <li class="nav-item">
-                <a href="#" class="nav-link">
-                  <i class="fa fa-circle-o nav-icon" pink></i>
-                  <p>Inactive Page</p>
-                </a>
-              </li>
-            </ul>
-          </li>
-          @can('isAdmin')
-          <li class="nav-item">
-            <router-link to="/developer" class="nav-link">
-                <i class="nav-icon fa fa-cogs"></i>
-                <p>
-                    Developer
-                </p>
-            </router-link>
-        </li>
-        @endcan
-          <li class="nav-item">
-            <router-link to="/bill-history" class="nav-link">
-                <i class="nav-icon fa fa-cogs"></i>
-                <p>
-                   Bill History
-                </p>
-            </router-link>
-        </li>
-        <li class="nav-item">
-            <router-link to="/mill-account" class="nav-link">
-                <i class="nav-icon fa fa-cogs"></i>
-                <p>
-                  Mill Accounts
-                </p>
-            </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link to="/user-accounts" class="nav-link">
-              <i class="nav-icon fa fa-cogs"></i>
-              <p>
-                User Accounts
-              </p>
-          </router-link>
-      </li>
-          {{-- @can('isAdmin')
-          <li class="nav-item">
-              <router-link to="/developer" class="nav-link">
-                  <i class="nav-icon fa fa-cogs"></i>
-                  <p>
-                      Developer
-                  </p>
+            {{-- <li class="sidebar-dropdown">
+              <a href="#">
+                <i class="fa fa-shopping-cart"></i>
+                <span>E-commerce</span>
+                <span class="badge badge-pill badge-danger">3</span>
+              </a>
+              <div class="sidebar-submenu">
+                <ul>
+                  <li>
+                    <a href="#">Products
+  
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#">Orders</a>
+                  </li>
+                  <li>
+                    <a href="#">Credit cart</a>
+                  </li>
+                </ul>
+              </div>
+            </li> --}}
+            {{-- <li class="sidebar-dropdown">
+              <a href="#">
+                <i class="far fa-gem"></i>
+                <span>Components</span>
+              </a>
+              <div class="sidebar-submenu">
+                <ul>
+                  <li>
+                    <a href="#">General</a>
+                  </li>
+                  <li>
+                    <a href="#">Panels</a>
+                  </li>
+                  <li>
+                    <a href="#">Tables</a>
+                  </li>
+                  <li>
+                    <a href="#">Icons</a>
+                  </li>
+                  <li>
+                    <a href="#">Forms</a>
+                  </li>
+                </ul>
+              </div>
+            </li> --}}
+            <li class="sidebar-dropdown">
+              <a href="#">
+                <i class="fa fa-cog"></i>
+                <span>Management</span>
+              </a>
+              <div class="sidebar-submenu">
+                @can('isAdmin')
+                <ul>
+                  <router-link to="/users">
+                    <i class="fa fa-users nav-icon purple"></i>
+                    <span>Users</span>
+                  </router-link>
+                  <router-link to="/developer">
+                      <i class="nav-icon fa fa-cogs"></i>
+                      <span>
+                          Developer
+                      </span>
+                  </router-link>
+                  <li>
+                    <a href="#">Bar chart</a>
+                  </li>
+                  <li>
+                    <a href="#">Histogram</a>
+                  </li>
+                </ul>
+                @endcan
+              </div>
+            </li>
+            {{-- <li class="sidebar-dropdown">
+              <a href="#">
+                <i class="fa fa-globe"></i>
+                <span>Maps</span>
+              </a>
+              <div class="sidebar-submenu">
+                <ul>
+                  <li>
+                    <a href="#">Google maps</a>
+                  </li>
+                  <li>
+                    <a href="#">Open street map</a>
+                  </li>
+                </ul>
+              </div>
+            </li> --}}
+            {{-- <li class="header-menu">
+              <span>Extra</span>
+            </li> --}}
+            {{-- <li>
+              <a href="#">
+                <i class="fa fa-book"></i>
+                <span>Documentation</span>
+                <span class="badge badge-pill badge-primary">Beta</span>
+              </a>
+            </li> --}}
+            <li>
+              <router-link to="/bill-history" class="nav-link">
+                <i class="far fa-money-bill-alt"></i>
+                    Bill History
+                  </span>
               </router-link>
-          </li>
-          @endcan --}}
-        <li class="nav-item">
-          <router-link to="/profile" class="nav-link">
-              <i class="nav-icon fa fa-user"></i>
-              <p>
-                  Profile
-              </p>
-          </router-link>
-      </li>
-          <li class="nav-item">
-            <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault();
-            document.getElementById('logout-form').submit();">
-              <i class="nav-icon fa fa-power-off" yellow></i>
-              <p>
-                Logout
-              </p>
-            </a>
-            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-              @csrf
-          </form>
-          </li>
-        </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-
-    <!-- Main content -->
-    <div class="content">
+            </li>
+            <li>
+              <router-link to="/mill-account" class="nav-link">
+                <i class="fab fa-stack-exchange"></i>
+                  <span>
+                    Mill Accounts
+                  </span>
+              </router-link>
+            </li>
+            <li>
+                <router-link to="/user-accounts" class="nav-link">
+                  <i class="nav-icon fa fa-history"></i>
+                  <span>
+                      Current Hisory Monthly
+                  </span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/report" class="nav-link">
+                  <i class="nav-icon fa fa-line-chart" aria-hidden="true"></i>
+                  <span>
+                      Report
+                  </span>
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/profile" class="nav-link">
+                  <i class="nav-icon fa fa-user"></i>
+                  <span>
+                      Profile
+                  </span>
+              </router-link>
+            </li>
+            
+            <li>
+              <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault();
+                document.getElementById('logout-form').submit();">
+                  <i class="nav-icon fa fa-power-off" yellow></i>
+                  <span>
+                    Logout
+                  </span>
+                </a>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                  @csrf
+              </form>
+            </li>
+          </ul>
+        </div>
+        <!-- sidebar-menu  -->
+      </div>
+      <!-- sidebar-content  -->
+      <div class="sidebar-footer">
+        <a href="#">
+          <i class="fa fa-bell"></i>
+          <span class="badge badge-pill badge-warning notification">3</span>
+        </a>
+        <a href="#">
+          <i class="fa fa-envelope"></i>
+          <span class="badge badge-pill badge-success notification">7</span>
+        </a>
+        <a href="#">
+          <i class="fa fa-cog"></i>
+          <span class="badge-sonar"></span>
+        </a>
+        <a href="#">
+          <i class="fa fa-power-off"></i>
+        </a>
+      </div>
+    </nav>
+    <!-- sidebar-wrapper  -->
+    <main class="page-content">
       <div class="container-fluid">
           <router-view></router-view>
           {{-- <vue-progress-bar></vue-progress-bar> --}}
       </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content -->
+     </main>
+    <!-- page-content" -->
   </div>
+ 
   <!-- /.control-sidebar -->
 
-  <!-- Main Footer -->
-  <footer class="main-footer">
-    <!-- To the right -->
-    <div class="float-right d-none d-sm-inline">
-      Anything you want
-    </div>
-    <!-- Default to the left -->
-    <strong>Copyright &copy; 2014-2018 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
-  </footer>
 </div>
 @auth
 <script>
@@ -198,17 +274,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
 </script>
 @endauth
 <!-- Scripts -->
-<script src="{{ asset('js/app.js') }}" defer></script>
 <!-- ./wrapper -->
-@auth
-<script>
-    window.user = @json(auth()->user())
-</script>
-@endauth
 <!-- REQUIRED SCRIPTS -->
-<script>
-  
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/app.js"></script>
 <!-- jQuery -->
 </body>
 </html>

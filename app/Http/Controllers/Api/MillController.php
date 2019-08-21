@@ -28,9 +28,11 @@ class MillController extends Controller
         $previousStatus=$this->checkPrevioustDate();
         if($previousStatus){
             $data['existingCurrentdata']=new MillCollection(DB::table('users')
-                ->leftjoin('mill_histories','users.id','=','mill_histories.user_id')
+                ->join('mill_histories','users.id','=','mill_histories.user_id')
                 ->where('date',date("Y-m-d"))
+                ->orderBy('user_id', 'ASC')
                 ->get());
+                // dd($data['existingCurrentdata']);
         }
         
         return $data;
@@ -140,6 +142,24 @@ class MillController extends Controller
         $updateMill->save();
     }
 
+
+
+    public function updateMill(Request $request){
+        
+        $this->validate($request,[
+            'user_id' => 'required',
+            'date' => "required",
+            'mill_status' => "required",
+            'second_mill' => 'required'
+        ]);
+
+        //**find user for update mill status */
+        $updateMill=MillHistory::where('user_id',$request->user_id)->where('date',$request->date)->first();
+        $updateMill->mill_status=$request->mill_status;
+        $updateMill->mill_status2=$request->second_mill;
+        $updateMill->save();
+    }
+
     /**
      * Remove the specified resource from storage.
      *
@@ -160,16 +180,39 @@ class MillController extends Controller
             // add the date to the dates array
             $dates[] = date('Y') . "-" . date('m') . "-" . str_pad($i, 2, '0', STR_PAD_LEFT);
         }
+        // dd($dates);
         $users=new UserCollection(User::orderBy('id', 'DESC')->get());
+        // dd($users);
         $count=$users->count();
         foreach($dates as $date){
-            $checkDate=MillHistory::where('date',$date)->first();
-            $countNumber=(array)$checkDate;
-            if(count($countNumber)<1){
+            $checkDate=MillHistory::where('date',$date)->get();
+            if($checkDate->count()<1){
                 for($i=0;$i<$count;$i++){
                     MillHistory::create(['user_id' => $users[$i]->id,'date'=>$date,'mill_status'=>0,'mill_status2'=>0]);
                 }
             }
+            $UserBasedAccount=MillHistory::where('date',$date)->get();
+            if(count($users) != count($UserBasedAccount) ){
+               foreach($users as $single_user){
+                   $count=0;
+                    foreach($UserBasedAccount as $account){
+                        if($single_user->id==$account->user_id){
+                            $count++;
+                        }
+                    }
+                    if($count==0){
+                        MillHistory::create(['user_id' =>$single_user->id,'date'=>$date,'mill_status'=>0,'mill_status2'=>0]);
+                    }
+                }
+            }
+            // $countNumber=(array)$checkDate;
+            // dd(count($countNumber));
+            // if(count($countNumber)<1){
+            //     for($i=0;$i<$count;$i++){
+            //         MillHistory::create(['user_id' => $users[$i]->id,'date'=>$date,'mill_status'=>0,'mill_status2'=>0]);
+            //     }
+            // }
+            
         }
 
         return true;

@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::apiResources(['profile' => 'API\ProfileController']);
-Route::apiResources(['user' => 'API\UserController']);
+Route::apiResources(['users' => 'API\UserController']);
 Route::apiResources(['millexpense' => 'API\MillAccountController']);
 Route::apiResources(['mill' => 'API\MillController']);
 //extra method 
@@ -27,3 +27,5 @@ Route::get('totalMill/{month}','API\MillController@TotalUserMill');
 Route::get('search/user/{field}/{query}','API\UserController@search');
 // Route::get('profile', 'API\ProfileController@profile');
 Route::get('diposite_user/{id}/{month}', 'API\MillAccountController@findDeposite');
+Route::post('updateMill/', 'API\MillController@updateMill');
+Route::get('report/', 'ReportController@index');

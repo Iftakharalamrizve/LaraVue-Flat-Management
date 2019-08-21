@@ -1,13 +1,13 @@
 <template>
     <div class="container-fluid">
-        <div class="row">
+        <div class="row mt-5">
             <div class="col-md-6 offset-md-3">
                 <select v-model="userFidnId" class="form-control" id="fileds" @change="userHistoryChange($event)">
                     <option  v-for="(user,index) in users" :key="index"  :value="user.id">{{user.name}}</option>
                 </select>
             </div>
         </div>
-        <div class="row">
+        <div class="row mt-2">
             <div class="col-md-6 offset-md-3">
                 <div class="tile">
                     <div class="wrapper">
@@ -19,11 +19,11 @@
 
                         <div class="dates">
                             <div class="start">
-                                <strong>STARTS</strong> 12:30 JAN 2015
+                                <strong>STARTS</strong> 1-{{ Date.now() | moment(" MMM-Y") }}
                                 <span></span>
                             </div>
                             <div class="ends">
-                                <strong>ENDS</strong> 14:30 JAN 2015
+                                <strong>ENDS</strong> {{ Date.now() | moment(" D-MMM-Y") }}
                             </div>
                         </div>
 
@@ -114,8 +114,9 @@
         methods:{
              getData(){
                 this.$Progress.start();
-                axios.get("/api/user")
+                axios.get("/api/users")
                 .then(response=>{
+                    console.log(response);
                     this.users=response.data.data;
                     this.$Progress.finish();
                 })

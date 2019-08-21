@@ -22,7 +22,7 @@ const VueProgressBarOptions = {
     failedColor: '#87111d',
     thickness: '5px',
     transition: {
-        speed: '0.2s',
+        speed: '0.1s',
         opacity: '0.6s',
         termination: 300
     },
@@ -52,6 +52,7 @@ const Snotifyoptions = {
 Vue.use(Snotify, Snotifyoptions)
 
 
+
 //** import and use vuex */
 import Vuex from 'vuex'
 Vue.use(Vuex)
@@ -60,6 +61,13 @@ Vue.use(Vuex)
 import {storage} from './components/store/index'
 const store = new Vuex.Store(storage)
 
+
+//import month year picker 
+import MonthPicker from 'vue-month-picker'
+import MonthPickerInput from 'vue-month-picker'
+
+Vue.use(MonthPicker)
+Vue.use(MonthPickerInput)
 
 
 

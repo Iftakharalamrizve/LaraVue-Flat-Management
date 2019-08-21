@@ -3,7 +3,16 @@
         <div class="row justify-content-cente mt-5">
              <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header"><h4 class="text-center">{{ Date.now() | moment(" MMMM") }} Month Mill History</h4></div>
+                    <div class="card-header">
+                        <h4 class="text-center">{{ Date.now() | moment(" MMMM") }} Month Mill History</h4>
+                        <div class="pull-right">
+                            <button class="btn btn-info"  v-if="$gate.isAdmin()" data-toggle="modal" data-target="#addModal1">Update Mill  <i class="far fa-money-bill-alt"></i></button>
+                            <button type="button" @click="reload" class="btn btn-primary" >
+                                Reload
+                                <i class="fa fa-refresh"></i>
+                            </button>
+                        </div>
+                    </div>
                     <div class="card-body table-responsive">
                       <table class="table table-hover">
                         <thead >
@@ -17,7 +26,7 @@
                                 <th  class="text-center" >{{mill.data[0].date}}</th>
                                 <th class="text-center" v-for=" (singleMill,idx) in mill.data" :key="idx">
                                     <i v-if="(parseInt(singleMill.mill_status)+parseInt(singleMill.second_mill))==0" class="fa fa-times text-danger" aria-hidden="true"></i>
-                                    <p v-else class="text-success">{{singleMill.mill_status+singleMill.second_mill}}</p>
+                                    <p v-else class="text-success">{{singleMill.mill_status}}+{{singleMill.second_mill}}</p>
                                 </th>
                             </tr>
                             <tr> 
@@ -27,6 +36,56 @@
                         </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+        <div class="modal fade" id="addModal1" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true" v-if="$gate.isAdmin()">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Update Mill History</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form @submit.prevent="updateMill" @keydown="form.onKeydown($event)">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <select name="expense_by" id="type" v-model="form.user_id" class="form-control" >
+                                <option value="">Select Member</option>
+                                <option  v-for="(user,index) in users" :key="index"  :value="user.id">{{user.name}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" v-model="form.date" class="form-control" name="date">
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" v-model="form.mill_status" >
+                                <option value="0">Off</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                                <option value="4">Four</option>
+                                <option value="5">Five</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" v-model="form.second_mill">
+                                <option value="0">Off</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                                <option value="4">Four</option>
+                                <option value="5">Five</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </div>
+                </form>
                 </div>
             </div>
         </div>
@@ -43,7 +102,13 @@
                 millList:[],
                 date: new Date(),
                 m:Number,
-                userMills:[]
+                userMills:[],
+                form: new Form({
+                    user_id:'',
+                    date: '',
+                    mill_status:'',
+                    second_mill: '',
+                }),
             }
         },
         mounted() {
@@ -57,6 +122,7 @@
                 .then(response=>{
                     this.users=response.data.users.data;
                     this.millHitory();
+                    console.log(this.users);
                     this.$Progress.finish();
                 })
                 .catch(e=>{
@@ -75,7 +141,34 @@
                 .catch(e=>{
                     this.$Progress.fail();
                 })
-            }
+            },
+            updateMill() {
+                this.$Progress.start();
+                this.form.busy = true;
+                this.form.post('api/updateMill')
+                .then(response=>{
+                    this.getData();
+                    $('#addModal1').modal('hide');
+                    this.form.reset();
+                    this.form.clear();
+                    this.$Progress.finish();
+                    this.$snotify.success("Mill Update Successfully Saved", "Success");
+                })
+                .catch(e=>{
+                    if(e != undefined){
+                        this.$Progress.fail();
+                        this.$snotify.error(
+                        "Something went wrong try again later.",
+                        "Error"
+                        );
+                    }
+                    
+                })
+            },
+            reload(){
+                this.getData();
+                this.$snotify.success("Data succesfully Refresh","Success");
+            },
         }
     }
 </script>

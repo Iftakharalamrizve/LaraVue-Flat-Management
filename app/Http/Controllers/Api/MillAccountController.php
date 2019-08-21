@@ -33,6 +33,7 @@ class MillAccountController extends Controller
     {
         $this->validate($request,[
             'expense_type' => 'required',
+            'expense_item_type' => 'required_if:expense_type,1',
             'expense_amount' => 'required',
             'expense_by' => 'required'
         ]);

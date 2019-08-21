@@ -5,7 +5,8 @@ import Developer from '../components/Developer';
 import Billhistory from '../components/Billhistory';
 import Mill from '../components/Mill';
 import UserAccount from '../components/UserAccount';
-// 
+import Report from '../components/Report';
+// Report
 export const routes = [
     { path: '/dashboard', component: Dashboard },
     { path: '/profile', component: Profile },
@@ -14,4 +15,5 @@ export const routes = [
     { path: '/bill-history', component: Billhistory },
     { path: '/mill-account', component: Mill },
     { path: '/user-accounts', component: UserAccount },
+    { path: '/report', component: Report },
   ]

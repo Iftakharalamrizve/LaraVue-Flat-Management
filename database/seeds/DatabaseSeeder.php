@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        factory(\App\User::class, 6)->create();
-        factory(\App\MillAccounts::class, 6)->create();
+        factory(\App\User::class, 7)->create();
+        // factory(\App\MillAccounts::class, 6)->create();
     }
 }

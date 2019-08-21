@@ -90,7 +90,7 @@
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form @submit.prevent="createUser" @keydown="form.onKeydown($event)">
+                <form @submit.prevent="createUser" @keydown="form.onKeydown($event)" enctype="multipart/form-data">
                     <div class="modal-body">
                         <div class="form-group">
                             <input v-model="form.name" type="text" name="name"
@@ -124,6 +124,11 @@
                             class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                             <has-error :form="form" field="password"></has-error>
                         </div>
+                        <div class="form-group">
+                            <input  type="file" name="prfile" 
+                            class="form-control" :class="{ 'is-invalid': form.errors.has('prfile') }" v-on:change="onImageChange">
+                            <has-error :form="form" field="prfile"></has-error>
+                        </div>
                     </div>
                 
                     <div class="modal-footer">
@@ -150,6 +155,8 @@
                 pagination: {
                     current_page: 1
                 },
+                
+                profile:'',
                 form: new Form({
                     name: '',
                     password:'',
@@ -172,11 +179,15 @@
             }
         },
         methods: {
+            onImageChange(e){
+                console.log(e.target.files[0]);
+                this.profile = e.target.files[0];
+            },
             
             getData(){
                 this.$Progress.start();
                 if(this.$gate.isAdmin()){
-                    axios.get("/api/user?page=" + this.pagination.current_page)
+                    axios.get("/api/users?page=" + this.pagination.current_page)
                     .then(response=>{
                         this.users=response.data.data;
                         this.pagination = response.data.meta;
@@ -215,26 +226,41 @@
             },
             createUser () {
             this.$Progress.start();
-            this.form.busy = true;
-            this.form.post('api/user')
-            .then(response=>{
-                this.getData();
-                $('#addModal').modal('hide');
-                this.form.reset();
-                this.form.clear();
-                this.$Progress.finish();
-                this.$snotify.success("Customer Successfully Saved", "Success");
-            })
-            .then(e=>{
-                if(e != undefined){
-                    this.$Progress.fail();
-                    this.$snotify.error(
-                    "Something went wrong try again later.",
-                    "Error"
-                    );
+                let currentObj = this;
+
+                const config = {
+                    headers: { 'content-type': 'multipart/form-data' }
                 }
-                
-            })
+                let formData = new FormData();
+                formData.append('profile', this.profile);
+                formData.append('name', this.form.name);
+                formData.append('password', this.form.password);
+                formData.append('email', this.form.email);
+                formData.append('role', this.form.role);
+                formData.append('role', this.form.role);
+                formData.append('phone', this.form.phone);
+                this.form.busy = true;
+                // this.form.post('api/user')
+                axios.post('api/users', formData, config)
+                .then(response=>{
+                    console.log(response)
+                    this.getData();
+                    $('#addModal').modal('hide');
+                    this.form.reset();
+                    this.form.clear();
+                    this.$Progress.finish();
+                    this.$snotify.success("Customer Successfully Saved", "Success");
+                })
+                .then(e=>{
+                    if(e != undefined){
+                        this.$Progress.fail();
+                        this.$snotify.error(
+                        "Something went wrong try again later.",
+                        "Error"
+                        );
+                    }
+                    
+                })
             },
             reload(){
                 this.query='';

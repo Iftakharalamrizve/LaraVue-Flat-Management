@@ -14,13 +14,8 @@
                         <tbody>
                             <tr>
                                 <td v-for=" (mill,index) in millCurrent" :key="index">
-                                    <!-- <label class="check ">
-                                        <input type="checkbox"  :checked='mill.mill_status'  @click="check(index)" name="is_name">
-                                        <input type="checkbox"  :checked='mill.second_mill'  @click="second_mill(index)" name="second_mill">
-                                        <span class="checkmark"></span>
-                                    </label> -->
                                     <div class="form-group">
-                                        <select v-model="mill.mill_status" @change="check($event,index)">
+                                        <select v-if="noonMill"   v-model="mill.mill_status" @change="check($event,index)">
                                             <option value="0">Off</option>
                                             <option value="1">One</option>
                                             <option value="2">Two</option>
@@ -28,7 +23,23 @@
                                             <option value="4">Four</option>
                                             <option value="5">Five</option>
                                         </select>
-                                        <select v-model="mill.second_mill"  @change="second_mill($event,index)">
+                                        <select v-else v-model="mill.mill_status" disabled>
+                                            <option value="0">Off</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                            <option value="4">Four</option>
+                                            <option value="5">Five</option>
+                                        </select>
+                                        <select v-if="dinnerMill"  v-model="mill.second_mill"  @change="second_mill($event,index)">
+                                            <option value="0">Off</option>
+                                            <option value="1">One</option>
+                                            <option value="2">Two</option>
+                                            <option value="3">Three</option>
+                                            <option value="4">Four</option>
+                                            <option value="5">Five</option>
+                                        </select>
+                                        <select  v-else  v-model="mill.second_mill" disabled  >
                                             <option value="0">Off</option>
                                             <option value="1">One</option>
                                             <option value="2">Two</option>
@@ -46,11 +57,9 @@
             </div>
         </div>
         <div class="row justify-content-cente mt-5">
-            
-             <mill-history ></mill-history>
+            <mill-history ></mill-history>
         </div>
         <vue-progress-bar ></vue-progress-bar>
-         <vue-snotify></vue-snotify>
     </div>
 </template>
 
@@ -60,17 +69,35 @@
             return{
 
                ckDate : { myDate : new Date().toISOString().slice(0,10) },
+               ckTime:new Date,
                 users:[],
                 todayMillHistory:[],
                 millCurrent:[],
-                millHistoryStatus:false
+                millHistoryStatus:false,
+                noonMill:Boolean,
+                dinnerMill:Boolean,
             }
         },
         mounted() {
             this.getData();
-            
+            this.created();
         },
         methods:{
+            created () {
+                var d = new Date();
+                var hours=d.getHours();
+                if(hours<=8){
+                    this.noonMill=true;
+                }else{
+                    this.noonMill=false;
+                }
+                if(hours<=14){
+                    this.dinnerMill=true;
+                }else{
+                    this.dinnerMill=false;
+                }
+            },
+            
             getData(){
                 this.$Progress.start();
                 axios.get("/api/mill")
@@ -107,6 +134,8 @@
                 // console.log(this.millCurrent);
             },
             check(event,index){
+                // console.log(this.millCurrent);
+                // console.log(index);
                 this.millCurrent[index].mill_status=event.target.value;
                 var updateMill=this.millCurrent[index];
                 axios.put('/api/mill/'+ updateMill.date,updateMill)
@@ -115,6 +144,8 @@
                 })
             },
             second_mill(event,index){
+                // console.log(this.millCurrent);
+                // console.log(index);
                 this.millCurrent[index].second_mill=event.target.value;
                 var updateMill=this.millCurrent[index];
                 axios.put('/api/mill/'+ updateMill.date,updateMill)

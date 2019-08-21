@@ -6,9 +6,11 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserCollection;
+use Illuminate\Support\Facades\Input;
 use App\User;
 use Auth;
 use Hash;
+use File;
 class UserController extends Controller
 {
 
@@ -24,7 +26,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $this->authorize('isAdmin');
+        // $this->authorize('isAdmin');
         return new UserCollection(User::orderBy('id', 'DESC')->get());
     }
 
@@ -49,12 +51,21 @@ class UserController extends Controller
             'password' => 'required|string|min:6'
         ]);
 
+        if(Input::file('profile')){
+            $image_name = time().'.'.$request->profile->getClientOriginalExtension();
+            $request->profile->move(public_path('/upload/profile'), $image_name);
+            
+        }else{
+            $image_name="default.png";
+        }
+
         return User::create([
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
             'phone' => $request->phone,
             'password' => Hash::make($request->password),
+            'profile' => $image_name,
         ]);
     }
 
